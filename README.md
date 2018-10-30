@@ -1,4 +1,4 @@
-# Rebolt Navigation
+# Nautilus
 
 [![Build Status][build-badge]][build]
 [![Version][version-badge]][package]
@@ -6,20 +6,14 @@
 [![PRs Welcome][prs-welcome-badge]][prs-welcome]
 [![Chat][chat-badge]][chat]
 
-> a fast, declarative navigation for react native
-
-We're looking forward to seeing your feedback or questions on Discord
-
-## Getting started
-
-[Rebolt Navigation website](https://rebolt-navigation.callstack.com/)
+> a fast, declarative navigation for reason react native
 
 ### Installation
 
 Open a Terminal in your project's folder and run,
 
-```she
-yarn add rebolt-navigation
+```sh
+yarn add nautilus
 ```
 
 After installation, you will need to add this library to your `bsconfig.json` dependencies
@@ -27,14 +21,14 @@ After installation, you will need to add this library to your `bsconfig.json` de
 ```json
 "bs-dependencies": [
   "reason-react",
-  "rebolt-navigation"
+  "nautilus"
 ],
 ```
 
 In addition you will need to install a few peer dependencies:
 
 ```sh
-yarn add rebolt react-native-gesture-handler
+yarn add xxx
 ```
 
 * `react-native-gesture-handler` - [installation instructions](https://github.com/kmagiera/react-native-gesture-handler#installation)
@@ -54,11 +48,10 @@ This generates output alongside source files. ([documentation](https://bucklescr
 
 ## Usage
 
-[View the docs](https://rebolt-navigation.callstack.com/docs/get-started.html#usage)
+create the docs
 
 ## Examples
-- example built-in library - [/example](/example)
-- standalone example - [reroute-example](https://github.com/souhe/reroute-example)
+
 
 ## Developing
 
@@ -67,16 +60,17 @@ This generates output alongside source files. ([documentation](https://bucklescr
 npm run start-example
 
 # Runs the app on iOS/Android
-npm run run-ios
+yarn run-ios
 
 # Watches for source build changes
-npm start
+yarn start
 ```
 
 ## License
 
-MIT (c) 2018 Callstack
+MIT (c) 2018 Astrocoders
 
+Badges to Update
 <!-- badges -->
 [build-badge]: https://img.shields.io/circleci/project/github/callstackincubator/rebolt-navigation/master.svg?style=flat-square
 [build]: https://circleci.com/gh/callstackincubator/rebolt-navigation
