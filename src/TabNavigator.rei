@@ -1,6 +1,6 @@
 module CreateTabNavigator:
   (Config: {type route;}) =>
-  {
+   {
     module TabNavigator: {
       type tabItemProps = {isActive: bool};
       type currentRoute = Config.route;
@@ -71,8 +71,8 @@ module CreateTabNavigator:
           let make:
             (
               ~label: string,
-              ~icon: Rebolt.Image.imageSource=?,
-              ~style: Rebolt.Style.t=?,
+              ~icon: BsReactNative.Image.imageSource=?,
+              ~style: BsReactNative.Style.t=?,
               'a
             ) =>
             ReasonReact.componentSpec(

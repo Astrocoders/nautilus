@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 let component = ReasonReact.statelessComponent("CustomHome");
 
@@ -7,17 +7,15 @@ let make = (~navigation, _children) => {
   render: _self =>
     <NavigationConfig.TabNavigator.Screen
       navigation
-      tabItem=(
+      tabItem={
         ({isActive}) =>
           <NavigationConfig.TabNavigator.TabBar.Item
             label="Home"
             style=Style.(
-                    style([
-                      color(isActive ? String("blue") : String("gray")),
-                    ])
-                  )
+              style([color(isActive ? String("blue") : String("gray"))])
+            )
           />
-      )>
-      ...(() => <Text> (ReasonReact.string("Home")) </Text>)
+      }>
+      ...{() => <Text> {ReasonReact.string("Home")} </Text>}
     </NavigationConfig.TabNavigator.Screen>,
 };

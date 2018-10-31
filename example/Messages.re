@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 let component = ReasonReact.statelessComponent("Messages");
 
@@ -58,15 +58,15 @@ let data = [|
 let renderItem =
   FlatList.renderItem((contact: FlatList.renderBag(contact)) =>
     <View style=Styles.listItem>
-      <Text style=Styles.name> (ReasonReact.string(contact.item.name)) </Text>
+      <Text style=Styles.name> {ReasonReact.string(contact.item.name)} </Text>
       <View style=Styles.rightActions>
         <Text>
-          (ReasonReact.string(string_of_int(contact.item.count)))
+          {ReasonReact.string(string_of_int(contact.item.count))}
         </Text>
         <TouchableOpacity>
           <Image
             style=Styles.icon
-            source=(Required(Packager.require("./assets/right.png")))
+            source={`Required(Packager.require("./assets/right.png"))}
           />
         </TouchableOpacity>
       </View>
@@ -79,21 +79,21 @@ let make = (~navigation, ~custom: bool, _children) => {
   ...component,
   render: _self =>
     <NavigationConfig.TabNavigator.Screen
-      tabItem=(
+      tabItem={
         ({isActive}) =>
           <NavigationConfig.TabNavigator.TabBar.Item
             label="Messages"
-            style=(
+            style={
               Style.style([Style.color(String(isActive ? "blue" : "gray"))])
-            )
+            }
           />
-      )
+      }
       navigation>
-      ...(
+      ...{
            () =>
-             <View style=(Styles.container(custom))>
+             <View style={Styles.container(custom)}>
                <FlatList data renderItem keyExtractor=extractor />
              </View>
-         )
+         }
     </NavigationConfig.TabNavigator.Screen>,
 };

@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 module Styles = {
   open Style;
@@ -19,7 +19,7 @@ let make =
         headerTitle="CustomTabBarExample"
         headerStyle=Styles.header
         navigation=nav>
-        ...(
+        ...{
              () =>
                <NavigationConfig.TabNavigator
                  initialRoute=Config.CustomProfile
@@ -28,7 +28,7 @@ let make =
                    Config.CustomMessages,
                    Config.CustomProfile,
                  |]>
-                 ...(
+                 ...{
                       (~navigation) =>
                         switch (navigation.currentRoute) {
                         | Config.CustomHome => <CustomHome navigation />
@@ -36,9 +36,9 @@ let make =
                           <Messages navigation custom=false />
                         | _ => <CustomProfile navigation />
                         }
-                    )
+                    }
                </NavigationConfig.TabNavigator>
-           )
+           }
       </NavigationConfig.StackNavigator.Screen>
     ),
 };

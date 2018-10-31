@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 module Styles = {
   open Style;
@@ -12,13 +12,13 @@ let make = (~navigation, _children) => {
   ...component,
   render: _self =>
     <NavigationConfig.TabNavigator.Screen
-      tabItem=(
+      tabItem={
         ({isActive}) =>
           <NavigationConfig.TabNavigator.TabBar.Item
             label=""
-            icon=(
+            icon={
               isActive ?
-                URI(
+                `URI(
                   Image.(
                     imageURISource(
                       ~uri="https://png.icons8.com/ios/1600/like.png",
@@ -26,7 +26,7 @@ let make = (~navigation, _children) => {
                     )
                   ),
                 ) :
-                URI(
+                `URI(
                   Image.(
                     imageURISource(
                       ~uri="https://png.icons8.com/ios/1600/settings.png",
@@ -34,17 +34,17 @@ let make = (~navigation, _children) => {
                     )
                   ),
                 )
-            )
+            }
           />
-      )
+      }
       navigation>
-      ...(
+      ...{
            () =>
              <View style=Styles.container>
                <Text style=Style.(style([fontSize(Float(24.))]))>
-                 (ReasonReact.string("About"))
+                 {ReasonReact.string("About")}
                </Text>
              </View>
-         )
+         }
     </NavigationConfig.TabNavigator.Screen>,
 };

@@ -46,9 +46,9 @@ module CreateStackNavigator:
         let make:
           (
             ~navigation: navigation,
-            ~style: Rebolt.Style.t=?,
+            ~style: BsReactNative.Style.t=?,
             ~headerTitle: string=?,
-            ~headerStyle: Rebolt.Style.t=?,
+            ~headerStyle: BsReactNative.Style.t=?,
             ~headerLeft: Header.returnsComponent=?,
             ~headerCenter: Header.returnsComponent=?,
             ~headerRight: Header.returnsComponent=?,

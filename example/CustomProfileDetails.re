@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 module Styles = {
   open Style;
@@ -35,40 +35,40 @@ let make = (~navigation, _children) => {
     NavigationConfig.TabNavigator.(
       <Screen
         navigation
-        tabItem=(
+        tabItem={
           ({isActive}) =>
             <TabBar.Item
               label="Details"
-              style=(Styles.tabBarItem(isActive))
+              style={Styles.tabBarItem(isActive)}
             />
-        )>
-        ...(
+        }>
+        ...{
              () =>
                <ScrollView>
                  <View style=Styles.container>
                    <View style=Styles.titleContainer>
                      <Text style=Styles.boldText>
-                       (ReasonReact.string("Contact info"))
+                       {ReasonReact.string("Contact info")}
                      </Text>
                    </View>
                    <View style=Styles.contentContainer>
                      <Text style=Styles.boldText>
-                       (ReasonReact.string("Address:"))
+                       {ReasonReact.string("Address:")}
                      </Text>
-                     <Text> (ReasonReact.string("9283 Park Lane")) </Text>
-                     <Text> (ReasonReact.string("I7 5SH, Chester")) </Text>
+                     <Text> {ReasonReact.string("9283 Park Lane")} </Text>
+                     <Text> {ReasonReact.string("I7 5SH, Chester")} </Text>
                      <Text style=Styles.boldTextWithMargin>
-                       (ReasonReact.string("Phone number:"))
+                       {ReasonReact.string("Phone number:")}
                      </Text>
-                     <Text> (ReasonReact.string("017687 11359")) </Text>
+                     <Text> {ReasonReact.string("017687 11359")} </Text>
                      <Text style=Styles.boldTextWithMargin>
-                       (ReasonReact.string("Email:"))
+                       {ReasonReact.string("Email:")}
                      </Text>
-                     <Text> (ReasonReact.string("j.chow@gmail.com")) </Text>
+                     <Text> {ReasonReact.string("j.chow@gmail.com")} </Text>
                    </View>
                  </View>
                </ScrollView>
-           )
+           }
       </Screen>
     ),
 };

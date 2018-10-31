@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 type t = {
   func:
@@ -10,8 +10,8 @@ type t = {
                 ]
     ) =>
     Animated.Animation.t,
-  forCard: 'a .Animated.value('a) => Style.t,
-  forHeader: 'a .Animated.value('a) => Style.t,
+  forCard: 'a. Animated.value('a) => Style.t,
+  forHeader: 'a. Animated.value('a) => Style.t,
 };
 
 let slideHorizontal = {
@@ -28,7 +28,7 @@ let slideHorizontal = {
     Style.(
       style([
         opacity(
-          Interpolated(
+          Animated(
             Animated.Value.interpolate(
               value,
               ~inputRange=[(-1.0), (-0.99), 0.0, 0.99, 1.0],
@@ -37,7 +37,7 @@ let slideHorizontal = {
             ),
           ),
         ),
-        Transform.makeInterpolated(
+        Transform.makeAnimated(
           ~translateX=
             Animated.Value.interpolate(
               value,
@@ -65,7 +65,7 @@ let fadeVertical = {
     Style.(
       style([
         opacity(
-          Interpolated(
+          Animated(
             Animated.Value.interpolate(
               value,
               ~inputRange=[(-1.0), (-0.99), 0.0, 1.0],
@@ -74,7 +74,7 @@ let fadeVertical = {
             ),
           ),
         ),
-        Transform.makeInterpolated(
+        Transform.makeAnimated(
           ~translateY=
             Animated.Value.interpolate(
               value,

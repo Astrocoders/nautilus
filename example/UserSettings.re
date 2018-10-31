@@ -1,6 +1,6 @@
-open Rebolt;
+open BsReactNative;
 
-let component = ReasonReact.statelessComponent("Settings");
+let component = ReasonReact.statelessComponent("UserSettings");
 
 module Styles = {
   open Style;
@@ -29,54 +29,54 @@ let make =
   ...component,
   render: _self =>
     <NavigationConfig.TabNavigator.Screen
-      tabItem=(
+      tabItem={
         ({isActive}) =>
           <NavigationConfig.TabNavigator.TabBar.Item
             label="MySettings"
-            style=(
+            style={
               Style.style([Style.color(String(isActive ? "blue" : "gray"))])
-            )
+            }
           />
-      )
+      }
       navigation>
-      ...(
+      ...{
            () =>
              <View style=Styles.container>
                <Text style=Styles.title>
-                 (ReasonReact.string("My Settings"))
+                 {ReasonReact.string("My Settings")}
                </Text>
                <TouchableOpacity
-                 onPress=(
+                 onPress={
                    _e =>
                      navigation.jumpTo(NavigationConfig.Config.ContactList)
-                 )>
-                 <View style=(Styles.button("#2180f7"))>
+                 }>
+                 <View style={Styles.button("#2180f7")}>
                    <Text style=Styles.buttonText>
-                     (ReasonReact.string("Go to contacts"))
+                     {ReasonReact.string("Go to contacts")}
                    </Text>
                  </View>
                </TouchableOpacity>
                <TouchableOpacity
-                 onPress=(
+                 onPress={
                    _e => navigation.jumpTo(NavigationConfig.Config.Messages)
-                 )>
-                 <View style=(Styles.button("#4cd964"))>
+                 }>
+                 <View style={Styles.button("#4cd964")}>
                    <Text style=Styles.buttonText>
-                     (ReasonReact.string("Go to messages"))
+                     {ReasonReact.string("Go to messages")}
                    </Text>
                  </View>
                </TouchableOpacity>
                <TouchableOpacity
-                 onPress=(
+                 onPress={
                    _e => stackNavigation.push(NavigationConfig.Config.Home)
-                 )>
-                 <View style=(Styles.button("#ff2242"))>
+                 }>
+                 <View style={Styles.button("#ff2242")}>
                    <Text style=Styles.buttonText>
-                     (ReasonReact.string("Take me to stack"))
+                     {ReasonReact.string("Take me to stack")}
                    </Text>
                  </View>
                </TouchableOpacity>
              </View>
-         )
+         }
     </NavigationConfig.TabNavigator.Screen>,
 };

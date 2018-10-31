@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 let screenWidth = Dimensions.get(`screen)##width;
 
@@ -17,21 +17,21 @@ let make =
   render: _self =>
     <NavigationConfig.StackNavigator.Screen
       navigation headerTitle="User profile">
-      ...(
+      ...{
            () =>
              <View style=Style.container>
                <Text style=Style.text>
-                 (ReasonReact.string("User profile"))
+                 {ReasonReact.string("User profile")}
                </Text>
                <TouchableOpacity
-                 onPress=(
+                 onPress={
                    _e => navigation.push(NavigationConfig.Config.Admin)
-                 )>
+                 }>
                  <Text style=Style.text>
-                   (ReasonReact.string("Go to Admin"))
+                   {ReasonReact.string("Go to Admin")}
                  </Text>
                </TouchableOpacity>
              </View>
-         )
+         }
     </NavigationConfig.StackNavigator.Screen>,
 };

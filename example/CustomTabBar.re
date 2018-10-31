@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 module Styles = {
   open Style;
@@ -45,40 +45,40 @@ let make =
   ...component,
   render: _self =>
     <View style=Styles.tabBar>
-      (
+      {
         tabBarProps.screens
         |> Array.mapi(
              (index, screen: NavigationConfig.TabNavigator.screenConfig) => {
              let isActive = tabBarProps.currentRoute === screen.route;
              isActive ?
                <Animated.View
-                 key=(string_of_int(index))
-                 style=(
+                 key={string_of_int(index)}
+                 style={
                    Styles.tabBarIndicator(
                      float_of_int(Array.length(tabBarProps.screens)),
                      index,
                    )
-                 )
+                 }
                /> :
                ReasonReact.null;
            })
         |> ReasonReact.array
-      )
-      (
+      }
+      {
         tabBarProps.screens
         |> Array.mapi(
              (index, screen: NavigationConfig.TabNavigator.screenConfig) => {
              let isActive = tabBarProps.currentRoute === screen.route;
              <TouchableWithoutFeedback
-               key=(string_of_int(index))
-               style=(Styles.tabBarItem(isActive))
-               onPress=(_e => tabBarProps.jumpTo(screen.route))>
+               key={string_of_int(index)}
+               style={Styles.tabBarItem(isActive)}
+               onPress={_e => tabBarProps.jumpTo(screen.route)}>
                <View style=Styles.tabBarItemContainer>
-                 (screen.tabItem({isActive: isActive}))
+                 {screen.tabItem({isActive: isActive})}
                </View>
              </TouchableWithoutFeedback>;
            })
         |> ReasonReact.array
-      )
+      }
     </View>,
 };

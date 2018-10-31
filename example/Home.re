@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 let component = ReasonReact.statelessComponent("Home");
 
@@ -24,13 +24,13 @@ module Styles = {
 let renderButtons = (nav: NavigationConfig.StackNavigator.navigation) =>
   <View>
     <TouchableOpacity
-      style=(Styles.button("#4cd964"))
-      onPress=(_e => nav.push(NavigationConfig.Config.Admin))>
-      <Text style=Styles.buttonText> (ReasonReact.string("Push")) </Text>
+      style={Styles.button("#4cd964")}
+      onPress={_e => nav.push(NavigationConfig.Config.Admin)}>
+      <Text style=Styles.buttonText> {ReasonReact.string("Push")} </Text>
     </TouchableOpacity>
     <TouchableOpacity
-      style=(Styles.button("#ff9500")) onPress=(_e => nav.pop())>
-      <Text style=Styles.buttonText> (ReasonReact.string("Pop")) </Text>
+      style={Styles.button("#ff9500")} onPress={_e => nav.pop()}>
+      <Text style=Styles.buttonText> {ReasonReact.string("Pop")} </Text>
     </TouchableOpacity>
   </View>;
 
@@ -42,14 +42,14 @@ let make =
   ...component,
   render: _self =>
     <NavigationConfig.StackNavigator.Screen headerTitle="Home" navigation=nav>
-      ...(
+      ...{
            () =>
              <View style=Styles.continer>
                <Text style=Styles.title>
-                 (ReasonReact.string("Home screen"))
+                 {ReasonReact.string("Home screen")}
                </Text>
-               (renderButtons(nav))
+               {renderButtons(nav)}
              </View>
-         )
+         }
     </NavigationConfig.StackNavigator.Screen>,
 };

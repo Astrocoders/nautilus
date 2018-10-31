@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 module Main = {
   let component = ReasonReact.statelessComponent("Main");
@@ -8,7 +8,7 @@ module Main = {
       NavigationConfig.(
         <NavigationConfig.StackNavigator
           initialState=[|Config.Welcome|]
-          onStateChange=(
+          onStateChange={
             state =>
               AsyncStorage.setItem(
                 "$state",
@@ -18,8 +18,8 @@ module Main = {
                 (),
               )
               |> ignore
-          )>
-          ...(
+          }>
+          ...{
                (~currentRoute, ~navigation) =>
                  switch (currentRoute) {
                  | Config.TabExample => <TabExample navigation />
@@ -31,7 +31,7 @@ module Main = {
                    <CustomTabBarExample navigation />
                  | _ => <TabExample navigation />
                  }
-             )
+             }
         </NavigationConfig.StackNavigator>
       ),
   };

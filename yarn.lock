@@ -1547,6 +1547,11 @@ bs-platform@^4.0.5:
   resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-4.0.5.tgz#d4fd9bbdd11765af5b75110a5655065ece05eed6"
   integrity sha512-wK+yUx/5ojlrxgk/EB3Hla7+9NEnE8PxtGb71e4IsKnWPXrRAaVtdTuoWWClv8z77xntOFg8qTgYfYyh9xLMWA==
 
+bs-react-native@^0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/bs-react-native/-/bs-react-native-0.10.0.tgz#4a9167cbe4c858008a9e56a0f745ba723c74101c"
+  integrity sha512-QpSbKwuYbDU1qBrxplmKvO8TZOtK2DpevoOUxDm0NfMNAdF6oacSbJfqMx89n2eGzMm8imZ3JsUeZPl6OT2N4A==
+
 bser@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/bser/-/bser-2.0.0.tgz#9ac78d3ed5d915804fd87acb158bc797147a1719"
@@ -4185,11 +4190,6 @@ reason-react@^0.4.1:
   dependencies:
     react ">=15.0.0 || >=16.0.0"
     react-dom ">=15.0.0 || >=16.0.0"
-
-rebolt@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/rebolt/-/rebolt-0.2.0.tgz#7bbe0c4242a0d572b878e910bd6e6f376ade10be"
-  integrity sha512-gdk3LY7Aq8gDZy8E/+I49iUrJdLBV/zYQB8e+WTny5mthKmTSHDGFylrPMb1fxoLOObyHf3BJEk7QFIfXkgARQ==
 
 regenerate@^1.2.1:
   version "1.3.3"

@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 module Styles = {
   open Style;
@@ -196,7 +196,7 @@ module CreateTabNavigator = (Config: {type route;}) => {
             | (label, Some(icon)) =>
               <View style=Styles.tabBarItem>
                 <Image source=icon style=Styles.tabBarItemIcon />
-                (
+                {
                   switch (label) {
                   | "" => ReasonReact.null
                   | _ =>
@@ -206,7 +206,7 @@ module CreateTabNavigator = (Config: {type route;}) => {
                       | _ => label
                       };
                     <Text
-                      style=(
+                      style={
                         Style.concat([
                           Styles.tabBarItemText(~textSize=Small),
                           switch (style) {
@@ -214,11 +214,11 @@ module CreateTabNavigator = (Config: {type route;}) => {
                           | None => Style.style([])
                           },
                         ])
-                      )>
-                      (ReasonReact.string(itemText))
+                      }>
+                      {ReasonReact.string(itemText)}
                     </Text>;
                   }
-                )
+                }
               </View>
             | (label, None) =>
               switch (label) {
@@ -230,7 +230,7 @@ module CreateTabNavigator = (Config: {type route;}) => {
                   | _ => label
                   };
                 <Text
-                  style=(
+                  style={
                     Style.concat([
                       Styles.tabBarItemText(~textSize=Regular),
                       switch (style) {
@@ -238,8 +238,8 @@ module CreateTabNavigator = (Config: {type route;}) => {
                       | None => Style.style([])
                       },
                     ])
-                  )>
-                  (ReasonReact.string(itemText))
+                  }>
+                  {ReasonReact.string(itemText)}
                 </Text>;
               }
             },
@@ -250,7 +250,7 @@ module CreateTabNavigator = (Config: {type route;}) => {
         ...component,
         render: _self =>
           <View style=Styles.tabBar>
-            (
+            {
               switch (Platform.os()) {
               | Platform.Android =>
                 tabBarProps.screens
@@ -258,45 +258,45 @@ module CreateTabNavigator = (Config: {type route;}) => {
                      let isActive = tabBarProps.currentRoute === screen.route;
                      isActive ?
                        <View
-                         key=(string_of_int(index))
-                         style=(
+                         key={string_of_int(index)}
+                         style={
                            Styles.tabBarIndicator(
                              float_of_int(Array.length(tabBarProps.screens)),
                              index,
                              tabBarProps.indicatorColor,
                            )
-                         )
+                         }
                        /> :
                        ReasonReact.null;
                    })
                 |> ReasonReact.array
               | _ => ReasonReact.null
               }
-            )
-            (
+            }
+            {
               tabBarProps.screens
               |> Array.mapi((index, screen) => {
                    let isActive = tabBarProps.currentRoute === screen.route;
                    <TouchableWithoutFeedback
-                     key=(string_of_int(index))
-                     onPress=(_e => tabBarProps.jumpTo(screen.route))>
+                     key={string_of_int(index)}
+                     onPress={_e => tabBarProps.jumpTo(screen.route)}>
                      <View style=Styles.tabBarItemContainer>
-                       (screen.tabItem({isActive: isActive}))
+                       {screen.tabItem({isActive: isActive})}
                      </View>
                    </TouchableWithoutFeedback>;
                  })
               |> ReasonReact.array
-            )
+            }
           </View>,
       };
     };
-    let getNavigationInterface = (~send, ~currentRoute, ~screens, ~index, ~isActive) => {
-       jumpTo: route => send(JumpTo(route)),
-       currentRoute,
-       screens: screens,
-       setOptions: options =>
-         send(SetOptions(options, index)),
-       isActive,
+    let getNavigationInterface =
+        (~send, ~currentRoute, ~screens, ~index, ~isActive) => {
+      jumpTo: route => send(JumpTo(route)),
+      currentRoute,
+      screens,
+      setOptions: options => send(SetOptions(options, index)),
+      isActive,
     };
     let component = ReasonReact.reducerComponent("TabNavigator");
     let make =
@@ -332,39 +332,48 @@ module CreateTabNavigator = (Config: {type route;}) => {
           ReasonReact.Update({...state, screens});
         },
       didMount: self => {
-        onNavigationReady(getNavigationInterface(~send=self.send, ~screens=self.state.screens, ~currentRoute=self.state.currentRoute, ~isActive=true, ~index=0));
+        onNavigationReady(
+          getNavigationInterface(
+            ~send=self.send,
+            ~screens=self.state.screens,
+            ~currentRoute=self.state.currentRoute,
+            ~isActive=true,
+            ~index=0,
+          ),
+        );
         ();
       },
       render: self =>
         <SafeAreaView
-          style=(
+          style={
             Styles.tabBarContainer(safeAreaViewBackgroundColor, renderTabBar)
-          )>
+          }>
           <View style=Styles.tabContainer>
-            (
+            {
               self.state.screens
               |> Array.mapi((index, screen) => {
                    let isActive = self.state.currentRoute === screen.route;
                    <View
-                     key=(string_of_int(index))
-                     style=(Styles.screenContainer(isActive))
-                     pointerEvents=(isActive ? `auto : `none)>
-                     (
+                     key={string_of_int(index)}
+                     style={Styles.screenContainer(isActive)}
+                     pointerEvents={isActive ? `auto : `none}>
+                     {
                        children(
-                         ~navigation=getNavigationInterface(
-                           ~send=self.send,
-                           ~screens=self.state.screens,
-                           ~currentRoute=screen.route,
-                           ~index,
-                           ~isActive,
-                         ),
+                         ~navigation=
+                           getNavigationInterface(
+                             ~send=self.send,
+                             ~screens=self.state.screens,
+                             ~currentRoute=screen.route,
+                             ~index,
+                             ~isActive,
+                           ),
                        )
-                     )
+                     }
                    </View>;
                  })
               |> ReasonReact.array
-            )
-            (
+            }
+            {
               switch (renderTabBar) {
               | Some(renderTabBar) =>
                 renderTabBar(
@@ -385,7 +394,7 @@ module CreateTabNavigator = (Config: {type route;}) => {
                   }
                 />
               }
-            )
+            }
           </View>
         </SafeAreaView>,
     };
@@ -404,7 +413,7 @@ module CreateTabNavigator = (Config: {type route;}) => {
         },
         render: _self =>
           navigation.isActive ?
-            <View style=Styles.tabContainer> (children()) </View> :
+            <View style=Styles.tabContainer> {children()} </View> :
             ReasonReact.null,
       };
     };

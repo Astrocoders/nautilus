@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 open Utils;
 
@@ -74,13 +74,10 @@ module CreateStackNavigator = (Config: {type route;}) => {
       type state = persistedState;
     });
     let getNavigationInterface = (send, screenKey) => {
-       push: route =>
-         send(PushScreen(route, screenKey)),
-       replace: route =>
-         send(ReplaceScreen(route, screenKey)),
-       pop: () => send(PopScreen(screenKey)),
-       setOptions: opts =>
-         send(SetOptions(opts, screenKey)),
+      push: route => send(PushScreen(route, screenKey)),
+      replace: route => send(ReplaceScreen(route, screenKey)),
+      pop: () => send(PopScreen(screenKey)),
+      setOptions: opts => send(SetOptions(opts, screenKey)),
     };
     /**
      * Gestures
@@ -147,7 +144,8 @@ module CreateStackNavigator = (Config: {type route;}) => {
           let toValue =
             e##translationX > screenWidth / 2 || e##velocityX > 150.00 ?
               screenWidth : 0;
-          Animated.CompositeAnimation.start(
+
+          Animated.start(
             Animated.spring(
               ~value=animatedValue,
               ~velocity=e##velocityX,
@@ -232,9 +230,13 @@ module CreateStackNavigator = (Config: {type route;}) => {
           activeScreen,
         };
       },
-      didMount: self => {
-        onNavigationReady(getNavigationInterface(self.send, string_of_int(self.state.activeScreen)))
-      },
+      didMount: self =>
+        onNavigationReady(
+          getNavigationInterface(
+            self.send,
+            string_of_int(self.state.activeScreen),
+          ),
+        ),
       /***
        * Begin animating two states as soon as the index changes.
        *
@@ -379,8 +381,8 @@ module CreateStackNavigator = (Config: {type route;}) => {
             ReasonReact.NoUpdate;
           }
         /***
-          * Rearranges the index after removing the replaced screen
-          */
+         * Rearranges the index after removing the replaced screen
+         */
         | ReplaceScreenFinish(key) =>
           ReasonReact.Update({
             ...state,
@@ -436,7 +438,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
          * Pops screen from the stack
          */
         | PopScreen(key) =>
-          let activeScreen = state.activeScreen
+          let activeScreen = state.activeScreen;
           if (state.activeScreen > 0 && Helpers.isActiveScreen(state, key)) {
             UpdateWithSideEffects(
               {
@@ -447,17 +449,13 @@ module CreateStackNavigator = (Config: {type route;}) => {
               (
                 self =>
                   self.send(
-                    StartTransition(
-                      `Pop,
-                      activeScreen,
-                      activeScreen - 1,
-                    ),
+                    StartTransition(`Pop, activeScreen, activeScreen - 1),
                   )
               ),
             );
           } else {
             ReasonReact.NoUpdate;
-          }
+          };
         /***
          * Removes a stale screen from the stack w/o animation.
          *
@@ -582,7 +580,8 @@ module CreateStackNavigator = (Config: {type route;}) => {
                        {
                          children(
                            ~currentRoute=screen.route,
-                           ~navigation=getNavigationInterface(self.send, screen.key),
+                           ~navigation=
+                             getNavigationInterface(self.send, screen.key),
                          )
                        }
                      </Animated.View>;
