@@ -1,9 +1,9 @@
-open Rebolt;
+open BsReactNative;
 
 open Utils;
 
 type config = {
-  style: option(Rebolt.Style.t),
+  style: option(BsReactNative.Style.t),
   title: option(string),
   center: option(returnsComponent),
   left: option(returnsComponent),
@@ -50,7 +50,7 @@ module TouchableItem = {
       Platform.version() >= 21 && Platform.os() == Platform.Android ?
         <TouchableNativeFeedback
           onPress
-          background=(TouchableNativeFeedback.ripple(pressColor, borderless))>
+          background={TouchableNativeFeedback.ripple(pressColor, borderless)}>
           ...children
         </TouchableNativeFeedback> :
         <TouchableOpacity onPress> ...children </TouchableOpacity>,
@@ -211,9 +211,11 @@ module IOSImpl = {
       let mask =
         <View style=Styles.iconMaskContainer>
           <Image
-            source=(
-              Required(Packager.require("./assets/back-icon-mask.png"))
-            )
+            source={
+                     `Required(
+                       Packager.require("./assets/back-icon-mask.png"),
+                     )
+                   }
             style=Styles.iconMask
           />
           <View style=Styles.iconMaskFillerRect />
@@ -221,7 +223,7 @@ module IOSImpl = {
       let renderLeft = p => {
         let {header, key} = scr(p);
         <Animated.View
-          onLayout=(
+          onLayout={
             /**
              * We are interested in measuring the left container
              * only once to prevent infinite loops.
@@ -238,15 +240,14 @@ module IOSImpl = {
                     ),
                   )
               )
-          )
+          }
           style=Style.(
-                  concat([
-                    Styles.left,
-                    p.animatedValue
-                    |> HeaderInterpolator.floating.forHeaderLeft,
-                  ])
-                )>
-          (
+            concat([
+              Styles.left,
+              p.animatedValue |> HeaderInterpolator.floating.forHeaderLeft,
+            ])
+          )>
+          {
             switch (header.left) {
             | Some(func) => func(p)
             | None =>
@@ -255,29 +256,29 @@ module IOSImpl = {
                 <TouchableOpacity onPress=(_e => p.pop(key))>
                   <View style=Styles.leftContainer>
                     <Animated.View
-                      style=(
+                      style={
                         p.animatedValue
                         |> HeaderInterpolator.floating.forHeaderLeftButton
-                      )>
+                      }>
                       <Image
                         style=Styles.leftIcon
-                        source=(
-                          Required(
-                            Packager.require("./assets/back-icon.png"),
-                          )
-                        )
+                        source={
+                                 `Required(
+                                   Packager.require("./assets/back-icon.png"),
+                                 )
+                               }
                       />
                     </Animated.View>
-                    (
+                    {
                       switch (p.screens[p.activeScreen - 1].header.title) {
                       | Some(backTitle) =>
                         <Animated.View
-                          style=(
+                          style={
                             p.animatedValue
                             |> HeaderInterpolator.floating.forHeaderLeftLabel
-                          )>
+                          }>
                           <Text style=Styles.leftTitle numberOfLines=1>
-                            (
+                            {
                               ReasonReact.string(
                                 /***
                                  * Measure the space left for the back button and decide
@@ -302,16 +303,16 @@ module IOSImpl = {
                                 | Not_found => backTitle
                                 },
                               )
-                            )
+                            }
                           </Text>
                         </Animated.View>
                       | None => ReasonReact.null
                       }
-                    )
+                    }
                   </View>
                 </TouchableOpacity>
             }
-          )
+          }
         </Animated.View>;
       };
       let renderCenter = p => {
@@ -325,7 +326,7 @@ module IOSImpl = {
           );
         <Animated.View
           style=containerStyle
-          onLayout=(
+          onLayout={
             e =>
               self.send(
                 SetTitleWidth(
@@ -333,48 +334,47 @@ module IOSImpl = {
                   RNEvent.NativeLayoutEvent.layout(e).width,
                 ),
               )
-          )>
-          (
+          }>
+          {
             switch (header.center) {
             | Some(func) => func(p)
             | None =>
               <Text style=Styles.headerTitle numberOfLines=1>
-                (
+                {
                   ReasonReact.string(
                     header.title |> Js.Option.getWithDefault(""),
                   )
-                )
+                }
               </Text>
             }
-          )
+          }
         </Animated.View>;
       };
       let renderRight = p =>
         <Animated.View
-          style=(
+          style={
             Style.concat([
               Styles.right,
               p.animatedValue |> HeaderInterpolator.floating.forHeaderRight,
             ])
-          )>
-          (
+          }>
+          {
             switch (scr(p).header.right) {
             | Some(func) => func(p)
             | None => ReasonReact.null
             }
-          )
+          }
         </Animated.View>;
       let lastIdx = Array.length(screens) - 1;
       <SafeAreaView
         style=Style.(
-                concat([
-                  Styles.container,
-                  scr(props).header.style
-                  |> Js.Option.getWithDefault(style([])),
-                ])
-              )>
+          concat([
+            Styles.container,
+            scr(props).header.style |> Js.Option.getWithDefault(style([])),
+          ])
+        )>
         <View style=Styles.header>
-          (
+          {
             screens
             |> Array.mapi((idx: int, screen) => {
                  /**
@@ -415,18 +415,18 @@ module IOSImpl = {
                    ReasonReact.null;
                  } else {
                    <MaskedViewIOS
-                     key=screen.key
+                     key={screen.key}
                      maskElement=mask
-                     style=(Style.concat([Styles.fill, initialOpacity]))
-                     pointerEvents=(activeScreen == idx ? `boxNone : `none)>
-                     (renderCenter(screenProps))
-                     (renderLeft(screenProps))
-                     (renderRight(screenProps))
+                     style={Style.concat([Styles.fill, initialOpacity])}
+                     pointerEvents={activeScreen == idx ? `boxNone : `none}>
+                     {renderCenter(screenProps)}
+                     {renderLeft(screenProps)}
+                     {renderRight(screenProps)}
                    </MaskedViewIOS>;
                  };
                })
             |> ReasonReact.array
-          )
+          }
         </View>
       </SafeAreaView>;
     },
@@ -479,11 +479,11 @@ module Android = {
     | Some(func) => func(p)
     | None =>
       <Text style=Styles.title>
-        (
+        {
           ReasonReact.string(
             scr(p).header.title |> Js.Option.getWithDefault(""),
           )
-        )
+        }
       </Text>
     };
   let renderLeft = p =>
@@ -494,7 +494,7 @@ module Android = {
         <TouchableItem onPress=(_e => p.pop(scr(p).key))>
           <Image
             style=Styles.icon
-            source=(Required(Packager.require("./assets/back-icon.png")))
+            source={`Required(Packager.require("./assets/back-icon.png"))}
           />
         </TouchableItem> :
         <View />
@@ -509,14 +509,14 @@ module Android = {
     render: _self =>
       <View
         style=Style.(
-                concat([
-                  Styles.header,
-                  scr(p).header.style |> Js.Option.getWithDefault(style([])),
-                ])
-              )>
-        (renderLeft(p))
-        (renderTitle(p))
-        (renderRight(p))
+          concat([
+            Styles.header,
+            scr(p).header.style |> Js.Option.getWithDefault(style([])),
+          ])
+        )>
+        {renderLeft(p)}
+        {renderTitle(p)}
+        {renderRight(p)}
       </View>,
   };
 };

@@ -10,15 +10,19 @@
 type t = {
   func:
     (
-      ~value: Rebolt.Animated.value(Rebolt.Animated.regular),
+      ~value: BsReactNative.Animated.value(BsReactNative.Animated.regular),
       ~toValue: [
-                  | `animated(Rebolt.Animated.value(Rebolt.Animated.regular))
+                  | `animated(
+                      BsReactNative.Animated.value(
+                        BsReactNative.Animated.regular,
+                      ),
+                    )
                   | `raw(float)
                 ]
     ) =>
-    Rebolt.Animated.Animation.t,
-  forCard: 'a .Rebolt.Animated.value('a) => Rebolt.Style.t,
-  forHeader: 'a .Rebolt.Animated.value('a) => Rebolt.Style.t,
+    BsReactNative.Animated.Animation.t,
+  forCard: 'a. BsReactNative.Animated.value('a) => BsReactNative.Style.t,
+  forHeader: 'a. BsReactNative.Animated.value('a) => BsReactNative.Style.t,
 };
 
 /**

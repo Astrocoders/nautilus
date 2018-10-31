@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 let component = ReasonReact.statelessComponent("Contacts");
 
@@ -81,14 +81,14 @@ let renderItem = (nav: NavigationConfig.StackNavigator.navigation) =>
   FlatList.renderItem((contact: FlatList.renderBag(contact)) =>
     <TouchableOpacity
       style=Styles.listItem
-      onPress=(_e => nav.push(NavigationConfig.Config.UserProfile))>
-      <Text style=Styles.name> (ReasonReact.string(contact.item.name)) </Text>
+      onPress={_e => nav.push(NavigationConfig.Config.UserProfile)}>
+      <Text style=Styles.name> {ReasonReact.string(contact.item.name)} </Text>
       <View style=Styles.rightActions>
-        <View style=(Styles.online(contact.item.online)) />
+        <View style={Styles.online(contact.item.online)} />
         <TouchableOpacity>
           <Image
             style=Styles.icon
-            source=(Required(Packager.require("./assets/right.png")))
+            source={`Required(Packager.require("./assets/right.png"))}
           />
         </TouchableOpacity>
       </View>
@@ -108,28 +108,28 @@ let make =
   render: _self =>
     NavigationConfig.TabNavigator.(
       <Screen
-        tabItem=(
+        tabItem={
           ({isActive}) =>
             <TabBar.Item
               label="Contacts"
-              style=(
+              style={
                 Style.style([
                   Style.color(String(isActive ? "blue" : "gray")),
                 ])
-              )
+              }
             />
-        )
+        }
         navigation>
-        ...(
+        ...{
              () =>
-               <View style=(Styles.container(custom))>
+               <View style={Styles.container(custom)}>
                  <FlatList
                    data
-                   renderItem=(renderItem(stackNavigation))
+                   renderItem={renderItem(stackNavigation)}
                    keyExtractor=extractor
                  />
                </View>
-           )
+           }
       </Screen>
     ),
 };

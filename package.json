@@ -1,7 +1,7 @@
 {
-  "name": "rebolt-navigation",
-  "version": "0.4.0",
-  "description": "Rebolt Navigation",
+  "name": "nautilus",
+  "version": "0.1.0",
+  "description": "Nautilus",
   "main": "index.js",
   "scripts": {
     "build": "bsb -make-world",
@@ -18,29 +18,29 @@
     "react",
     "reason",
     "reasonml",
-    "rebolt"
+    "react-native"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/callstackincubator/rebolt-navigation.git"
+    "url": "git+https://github.com/Astrocoders/nautilus.git"
   },
-  "author": "Mike Grabowski <grabbou@gmail.com>",
+  "author": "Astrocoders <grsabreu@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/callstackincubator/rebolt-navigation/issues"
+    "url": "https://github.com/Astrocoders/nautilus/issues"
   },
-  "homepage": "https://github.com/callstackincubator/rebolt-navigation#readme",
+  "homepage": "https://github.com/Astrocoders/nautilus#readme",
   "devDependencies": {
     "bs-platform": "^4.0.5",
     "react": "^16.3.0-alpha.1",
     "react-native": "^0.55.4",
     "react-native-gesture-handler": "^1.0.0-alpha.41",
     "reason-react": "^0.4.1",
-    "rebolt": "^0.2.0"
+    "bs-react-native": "^0.10.0"
   },
   "peerDependencies": {
     "react-native-gesture-handler": "*",
     "reason-react": "*",
-    "rebolt": "^0.2.0"
+    "bs-react-native": "^0.10.0"
   }
 }

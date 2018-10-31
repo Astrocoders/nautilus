@@ -1,6 +1,6 @@
 /** Header configuration object */
 type config = {
-  style: option(Rebolt.Style.t),
+  style: option(BsReactNative.Style.t),
   title: option(string),
   center: option(returnsComponent),
   left: option(returnsComponent),
@@ -17,7 +17,7 @@ and screen = {
 and props = {
   screens: array(screen),
   activeScreen: int,
-  animatedValue: Rebolt.Animated.Interpolation.t,
+  animatedValue: BsReactNative.Animated.Interpolation.t,
   pop: string => unit,
 };
 

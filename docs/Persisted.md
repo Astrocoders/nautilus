@@ -59,9 +59,7 @@ reducer: (action, _state) =>
 
 ## didUpdate
 
-Next step is to define `didUpdate` component lifecycle method.
-Here we use `AsyncStorage` to get our routes from `AsyncStorage` if any exists.
-If any routes config exists, then we do rehydrate our state. Otherwise, we use the default configuration.
+Next step is to define `didUpdate` component lifecycle method. Here we use `AsyncStorage` to get our routes from `AsyncStorage` if any exists. If any routes config exists, then we do rehydrate our state. Otherwise, we use the default configuration.
 
 ```reason
 didMount: self => {
@@ -109,7 +107,7 @@ The last thing is to render StackNavigator with `initialState` and `onStateChang
 ```reason
 open NavigationConfig;
 
-open Rebolt;
+open BsReactNative;
 
 module Main = {
   type state = {persistedState: option(StackNavigator.persistedState)};

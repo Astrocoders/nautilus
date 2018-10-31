@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 let screenWidth = Dimensions.get(`screen)##width;
 
@@ -38,10 +38,10 @@ let make =
   ...component,
   render: _self =>
     <NavigationConfig.StackNavigator.Screen navigation headerTitle="Examples">
-      ...(
+      ...{
            () =>
              <View style=Style.container>
-               (
+               {
                  examplesList
                  |> Array.map(example => {
                       let route =
@@ -52,8 +52,8 @@ let make =
                         };
                       <TouchableOpacity
                         key=route
-                        style=(Style.button("#5ac8fa"))
-                        onPress=(
+                        style={Style.button("#5ac8fa")}
+                        onPress={
                           () =>
                             switch (example) {
                             | Tab =>
@@ -67,15 +67,15 @@ let make =
                                 NavigationConfig.Config.CustomTabBarExample,
                               )
                             }
-                        )>
+                        }>
                         <Text style=Style.text>
-                          (ReasonReact.string(route))
+                          {ReasonReact.string(route)}
                         </Text>
                       </TouchableOpacity>;
                     })
                  |> ReasonReact.array
-               )
+               }
              </View>
-         )
+         }
     </NavigationConfig.StackNavigator.Screen>,
 };

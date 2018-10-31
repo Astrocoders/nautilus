@@ -9,9 +9,9 @@ The library is built in Reason, so we are assuming you are all set with the Reas
 ## Install the library
 
 ```sh
-yarn add rebolt-navigation
+yarn add bs-nautilus
 # or
-npm install rebolt-navigation --save
+npm install bs-nautilus --save
 ```
 
 ## Add it to your config
@@ -21,7 +21,7 @@ In your `bsconfig.json` add it to the dependecies:
 ```json
 "bs-dependencies": [
   "reason-react",
-  "rebolt-navigation"
+  "bs-nautilus"
 ],
 "namespace": true
 ```
@@ -35,8 +35,7 @@ In addition you will need to install a few peer dependencies:
 
 ## Usage
 
-First we need to create the navigation based on our needs.
-In `Navigation.re`, we will create our `Config` module and pass it to a `CreateNavigation` functor:
+First we need to create the navigation based on our needs. In `Navigation.re`, we will create our `Config` module and pass it to a `CreateNavigation` functor:
 
 **Navigation.re**:
 
@@ -48,7 +47,7 @@ module Config = {
     | Contact;
 };
 
-include ReboltNavigation.Navigation.CreateNavigation(Config);
+include Nautilus.Navigation.CreateNavigation(Config);
 ```
 
 That's it! Now you are ready to use Rebolt Navigation in your React Native application.

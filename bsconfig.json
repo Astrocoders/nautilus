@@ -1,14 +1,8 @@
 {
-  "name": "rebolt-navigation",
-  "bsc-flags": [
-    "-bs-no-version-header",
-    "-bs-super-errors"
-  ],
+  "name": "nautilus",
+  "bsc-flags": ["-bs-no-version-header", "-bs-super-errors"],
   "refmt": 3,
-  "bs-dependencies": [
-    "reason-react",
-    "rebolt"
-  ],
+  "bs-dependencies": ["reason-react", "bs-react-native"],
   "reason": {
     "react-jsx": 2
   },

@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 module Styles = {
   open Style;
@@ -34,34 +34,34 @@ let make = (~navigation, _children) => {
   render: _self =>
     <NavigationConfig.TabNavigator.Screen
       navigation
-      tabItem=(
+      tabItem={
         ({isActive}) =>
           <NavigationConfig.TabNavigator.TabBar.Item
             label="Stats"
-            style=(Styles.tabBarItem(isActive))
+            style={Styles.tabBarItem(isActive)}
           />
-      )>
-      ...(
+      }>
+      ...{
            () =>
              <ScrollView>
                <View style=Styles.container>
                  <View style=Styles.titleContainer>
                    <Text style=Styles.boldText>
-                     (ReasonReact.string("Statistics"))
+                     {ReasonReact.string("Statistics")}
                    </Text>
                  </View>
                  <View style=Styles.contentContainer>
                    <Text style=Styles.boldText>
-                     (ReasonReact.string("Steps:"))
+                     {ReasonReact.string("Steps:")}
                    </Text>
-                   <Text> (ReasonReact.string("9830")) </Text>
+                   <Text> {ReasonReact.string("9830")} </Text>
                    <Text style=Styles.boldTextWithMargin>
-                     (ReasonReact.string("Distance:"))
+                     {ReasonReact.string("Distance:")}
                    </Text>
-                   <Text> (ReasonReact.string("7.44km")) </Text>
+                   <Text> {ReasonReact.string("7.44km")} </Text>
                  </View>
                </View>
              </ScrollView>
-         )
+         }
     </NavigationConfig.TabNavigator.Screen>,
 };

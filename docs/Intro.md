@@ -1,7 +1,7 @@
 ---
 id: intro
-title: What is Rebolt Navigation?
-sidebar_label: What is Rebolt Navigation?
+title: What is Nautilus?
+sidebar_label: What is Nautilus?
 ---
 
 ### A fast and declarative navigation library for React Native in Reason.

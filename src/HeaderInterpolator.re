@@ -1,11 +1,11 @@
-open Rebolt;
+open BsReactNative;
 
 type t = {
-  forHeaderCenter: 'a .Animated.value('a) => Style.t,
-  forHeaderLeft: 'a .Animated.value('a) => Style.t,
-  forHeaderLeftLabel: 'a .Animated.value('a) => Style.t,
-  forHeaderLeftButton: 'a .Animated.value('a) => Style.t,
-  forHeaderRight: 'a .Animated.value('a) => Style.t,
+  forHeaderCenter: 'a. Animated.value('a) => Style.t,
+  forHeaderLeft: 'a. Animated.value('a) => Style.t,
+  forHeaderLeftLabel: 'a. Animated.value('a) => Style.t,
+  forHeaderLeftButton: 'a. Animated.value('a) => Style.t,
+  forHeaderRight: 'a. Animated.value('a) => Style.t,
 };
 
 let crossFadeInterpolation = (~startRange, ~midRange, ~endRange, value) =>
@@ -30,7 +30,7 @@ let floating = {
     Style.(
       style([
         opacity(
-          Interpolated(
+          Animated(
             Animated.Value.interpolate(
               value,
               ~inputRange=[(-1.0), (-0.999), (-0.5), 0.0, 0.7, 0.999, 1.0],
@@ -39,7 +39,7 @@ let floating = {
             ),
           ),
         ),
-        Transform.makeInterpolated(
+        Transform.makeAnimated(
           ~translateX=
             Animated.Value.interpolate(
               value,
@@ -58,7 +58,7 @@ let floating = {
     Style.(
       style([
         opacity(
-          Interpolated(
+          Animated(
             Animated.Value.interpolate(
               value,
               ~inputRange=[(-1.0), (-0.999), (-0.5), 0.0, 0.5, 0.999, 1.0],
@@ -74,7 +74,7 @@ let floating = {
     Style.(
       style([
         opacity(
-          Interpolated(
+          Animated(
             Animated.Value.interpolate(
               value,
               ~inputRange=[(-1.0), (-0.999), (-0.35), 0.0, 0.5, 0.999, 1.0],
@@ -83,7 +83,7 @@ let floating = {
             ),
           ),
         ),
-        Transform.makeInterpolated(
+        Transform.makeAnimated(
           ~translateX=
             Animated.Value.interpolate(
               value,
@@ -107,7 +107,7 @@ let floating = {
     Style.(
       style([
         opacity(
-          Interpolated(
+          Animated(
             value
             |> crossFadeInterpolation(
                  ~startRange=-1.0,

@@ -1,4 +1,4 @@
-open Rebolt;
+open BsReactNative;
 
 module Styles = {
   open Style;
@@ -32,33 +32,33 @@ let make = (~navigation, _children) => {
   render: _self =>
     <NavigationConfig.TabNavigator.Screen
       navigation
-      tabItem=(
+      tabItem={
         ({isActive}) =>
           <NavigationConfig.TabNavigator.TabBar.Item
             label="Profile"
-            style=(Styles.tabBarItem(isActive))
+            style={Styles.tabBarItem(isActive)}
           />
-      )>
-      ...(
+      }>
+      ...{
            () =>
              <View style=Styles.container>
                <View style=Styles.profileContainer>
                  <Image
                    style=Styles.profileImg
-                   source=(
-                     URI(
-                       Image.(
-                         imageURISource(
-                           ~uri=
-                             "https://randomuser.me/api/portraits/women/2.jpg",
-                           (),
-                         )
-                       ),
-                     )
-                   )
+                   source={
+                            `URI(
+                              Image.(
+                                imageURISource(
+                                  ~uri=
+                                    "https://randomuser.me/api/portraits/women/2.jpg",
+                                  (),
+                                )
+                              ),
+                            )
+                          }
                  />
                  <Text style=Styles.name>
-                   (ReasonReact.string("Julia Chow"))
+                   {ReasonReact.string("Julia Chow")}
                  </Text>
                </View>
                <NavigationConfig.TabNavigator
@@ -67,24 +67,24 @@ let make = (~navigation, _children) => {
                    NavigationConfig.Config.CustomProfileDetails,
                    NavigationConfig.Config.CustomProfileStats,
                  |]
-                 renderTabBar=((~tabBarProps) => <CustomTabBar tabBarProps />)>
-                 ...(
+                 renderTabBar={(~tabBarProps) => <CustomTabBar tabBarProps />}>
+                 ...{
                       (~navigation) =>
                         <View
                           style=Style.(
-                                  style([flex(1.), marginTop(Pt(40.))])
-                                )>
-                          (
+                            style([flex(1.), marginTop(Pt(40.))])
+                          )>
+                          {
                             switch (navigation.currentRoute) {
                             | NavigationConfig.Config.CustomProfileDetails =>
                               <CustomProfileDetails navigation />
                             | _ => <CustomProfileStats navigation />
                             }
-                          )
+                          }
                         </View>
-                    )
+                    }
                </NavigationConfig.TabNavigator>
              </View>
-         )
+         }
     </NavigationConfig.TabNavigator.Screen>,
 };
