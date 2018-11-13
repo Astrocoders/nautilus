@@ -232,9 +232,13 @@ module CreateStackNavigator = (Config: {type route;}) => {
       },
       didMount: self =>
         onNavigationReady(
-          getNavigationInterface(
-            self.send,
-            string_of_int(self.state.activeScreen),
+          self.handle((cb, self) =>
+            cb(
+              getNavigationInterface(
+                self.send,
+                self.state.screens[self.state.activeScreen].key,
+              ),
+            )
           ),
         ),
       /***
