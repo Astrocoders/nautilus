@@ -132,24 +132,25 @@ module CreateStackNavigator = (Config: {type route;}) => {
                         ),
                       ),
                     ),
-                    Transform.makeAnimated(
-                      ~translateX=
+                    left(
+                      Animated(
                         Animated.Value.interpolate(
                           value,
                           ~inputRange=[0.0, 1.],
-                          ~outputRange=
-                            `float([0., layout.x -. targetLayout.x]),
+                          ~outputRange=`float([layout.x, targetLayout.x]),
                           (),
                         ),
-                      ~translateY=
+                      ),
+                    ),
+                    top(
+                      Animated(
                         Animated.Value.interpolate(
                           value,
                           ~inputRange=[0.0, 1.0],
-                          ~outputRange=
-                            `float([0., layout.y -. targetLayout.y]),
+                          ~outputRange=`float([layout.y, targetLayout.y]),
                           (),
                         ),
-                      (),
+                      ),
                     ),
                   ])
                 ),
@@ -303,7 +304,6 @@ module CreateStackNavigator = (Config: {type route;}) => {
                   Animated.sequence([|
                     Animated.timing(
                       ~duration=600.0,
-                      ~useNativeDriver=true,
                       ~value=first.sharedElementAnimatedValue,
                       ~toValue=`raw(1.0),
                       (),
@@ -505,6 +505,10 @@ module CreateStackNavigator = (Config: {type route;}) => {
         <View style=Styles.stackContainer>
           <Animated.View style=Styles.flex>
             {
+              let sharedElements =
+                self.state.screens
+                ->Belt.Array.map(screen => screen.sharedElements)
+                ->Belt.Array.reduce([||], Belt.Array.concat);
               self.state.screens
               |> Array.mapi((idx, screen: screenConfig) => {
                    let animation =
@@ -520,28 +524,6 @@ module CreateStackNavigator = (Config: {type route;}) => {
                        concat([Styles.fill, screen.style, animation])
                      )>
                      {
-                       screen.sharedElements
-                       ->Belt.Array.map(element => {
-                           let sharedElements =
-                             self.state.screens
-                             ->Belt.Array.map(screen => screen.sharedElements)
-                             ->Belt.Array.reduce([||], Belt.Array.concat);
-                           let targetElement =
-                             sharedElements
-                             ->find(target =>
-                                 target.name == element.name
-                                 && target.type_ != element.type_
-                               );
-                           let style = targetElement->Belt.Option.map(target => element.getAnimatedStyle(screen.sharedElementAnimatedValue, target.originalCoordinates))->Belt.Option.getWithDefault(Style.style([]));
-          <Animated.View style>
-          {
-            element.renderChildren()
-          }
-          </Animated.View>;
-                         })
-                       |> ReasonReact.array
-                     }
-                     {
                        children(
                          ~currentRoute=screen.route,
                          ~navigation=
@@ -553,9 +535,33 @@ module CreateStackNavigator = (Config: {type route;}) => {
                            ),
                        )
                      }
+                     {
+                       screen.sharedElements
+                       ->Belt.Array.map(element => {
+                           let targetElement =
+                             sharedElements
+                             ->find(target =>
+                                 target.name == element.name
+                                 && target.type_ != element.type_
+                               );
+                           let style =
+                             targetElement
+                             ->Belt.Option.map(target =>
+                                 element.getAnimatedStyle(
+                                   screen.sharedElementAnimatedValue,
+                                   target.originalCoordinates,
+                                 )
+                               )
+                             ->Belt.Option.getWithDefault(Style.style([]));
+                           <Animated.View style key=element.name>
+                             {element.renderChildren()}
+                           </Animated.View>;
+                         })
+                       |> ReasonReact.array
+                     }
                    </Animated.View>;
                  })
-              |> ReasonReact.array
+              |> ReasonReact.array;
             }
           </Animated.View>
         </View>;
@@ -654,50 +660,20 @@ module CreateStackNavigator = (Config: {type route;}) => {
               ),
             )
           },
-        render: self => {
-          let targetType = type_ == Source ? Destination : Source;
-          let style =
-            Belt.Option.getWithDefault(
-              {
-                let sharedElements =
-                  navigation.screens
-                  ->Belt.Array.map(screen => screen.sharedElements)
-                  ->Belt.Array.reduce([||], Belt.Array.concat);
-                let sourceElement =
-                  sharedElements
-                  ->find(element =>
-                      element.name == name && element.type_ == type_
-                    );
-                let targetElement =
-                  sharedElements
-                  ->find(element =>
-                      element.name == name && element.type_ == targetType
-                    );
-
-                switch (sourceElement, targetElement) {
-                | (Some(source), Some(target)) =>
-                  Some(
-                    source.getAnimatedStyle(
-                      navigation.screen.sharedElementAnimatedValue,
-                      target.originalCoordinates,
-                    ),
-                  )
-                | _ => None
-                };
-              },
-              Style.style([]),
-            );
-
-            <View
-              ref={
-                node =>
-                  self.state.nodeRef == None ?
-                    self.send(Set(Js.Nullable.toOption(node))) : ()
-              }
-              onLayout={_ => self.send(MeasureLayout)}>
-              {children()}
-            </View>
-        },
+        render: self =>
+          <View
+            ref={
+              node =>
+                self.state.nodeRef == None ?
+                  self.send(Set(Js.Nullable.toOption(node))) : ()
+            }
+            onLayout={_ => self.send(MeasureLayout)}
+            style=Style.style([ 
+                              /* Hide when transition start (StartTransition)*/
+            ])
+          >
+            {children()}
+          </View>,
       };
     };
   };
