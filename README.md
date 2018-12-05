@@ -13,7 +13,7 @@
 Open a Terminal in your project's folder and run,
 
 ```sh
-yarn add nautilus
+yarn add @astrocoders/nautilus
 ```
 
 After installation, you will need to add this library to your `bsconfig.json` dependencies
