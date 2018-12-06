@@ -51,6 +51,7 @@ type commonNavigation('route, 'options, 'screen) = {
     unit,
   screen: 'screen,
   screens: array('screen),
+  navigating: bool,
 };
 
 module CreateStackNavigator = (Config: {type route;}) => {
@@ -82,6 +83,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
       screens: array(screenConfig),
       pendingTransition: option(pendingTransition),
       activeScreen: int,
+      navigating: bool,
     };
     type persistedState = array(Config.route);
     type options = {
@@ -97,18 +99,21 @@ module CreateStackNavigator = (Config: {type route;}) => {
       | RemoveStaleScreen(string)
       | ReplaceScreenFinish(string)
       | RemoveLastScreen
-      | PopScreen(string);
+      | PopScreen(string)
+      | SetNavigating(bool);
     type navigation = commonNavigation(Config.route, options, screenConfig);
     include Persistence.CreatePersistence({
       type state = persistedState;
     });
-    let getNavigationInterface = (send, screenKey, screen, screens) => {
+    let getNavigationInterface =
+        (send, screenKey, screen, screens, navigating) => {
       screen,
       screens,
       push: route => send(PushScreen(route, screenKey)),
       replace: route => send(ReplaceScreen(route, screenKey)),
       pop: () => send(PopScreen(screenKey)),
       setOptions: opts => send(SetOptions(opts, screenKey)),
+      navigating,
       addSharedElement: (~name, ~layout, ~type_, ~renderChildren) =>
         send(
           AddSharedElement(
@@ -118,20 +123,12 @@ module CreateStackNavigator = (Config: {type route;}) => {
               originalCoordinates: layout,
               type_,
               renderChildren,
-              getAnimatedStyle: (value, targetLayout) =>
+              getAnimatedStyle: (value, targetLayout) => {
+                Js.log2("Target Layout", targetLayout);
+                Js.log2("Origin Layout", layout);
                 Style.(
                   style([
                     position(Absolute),
-                    opacity(
-                      Animated(
-                        Animated.Value.interpolate(
-                          value,
-                          ~inputRange=[0.0, 0.99, 1.],
-                          ~outputRange=`float([1., 1., 0.]),
-                          (),
-                        ),
-                      ),
-                    ),
                     left(
                       Animated(
                         Animated.Value.interpolate(
@@ -153,7 +150,8 @@ module CreateStackNavigator = (Config: {type route;}) => {
                       ),
                     ),
                   ])
-                ),
+                );
+              }
             },
           ),
         ),
@@ -187,7 +185,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
             |> Array.mapi((idx, route) =>
                  {
                    route,
-                   animation: Animation.fadeVertical,
+                   animation: Animation.fade,
                    key: UUID.generate(),
                    animatedValue:
                      Animated.Value.create(
@@ -200,6 +198,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
                  }
                ),
           activeScreen,
+          navigating: false,
         };
       },
       didMount: self =>
@@ -268,7 +267,8 @@ module CreateStackNavigator = (Config: {type route;}) => {
          * 1 to 0 -> this screen has been pushed
          */
         | StartTransition(transition, fromIdx, toIdx) =>
-          SideEffects(
+          UpdateWithSideEffects(
+            {...state, navigating: true},
             (
               self => {
                 let (first, second) =
@@ -284,6 +284,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
                   | `Replace => ((0.0, (-1.0)), (1.0, 0.0))
                   | `Pop => (((-1.0), 0.0), (0.0, 1.0))
                   };
+                let sourceScreen = transition == `Pop ? second : first;
                 /**
                  * There seems to be a bug with `Animated` that it resets
                  * Animated.Values to its initial values after the transition finishes.
@@ -297,14 +298,14 @@ module CreateStackNavigator = (Config: {type route;}) => {
                 );
                 Animated.Value.setValue(second.animatedValue, 1.0);
                 Animated.Value.setValue(
-                  first.sharedElementAnimatedValue,
+                  sourceScreen.sharedElementAnimatedValue,
                   0.0,
                 );
                 Animated.start(
                   Animated.sequence([|
                     Animated.timing(
                       ~duration=600.0,
-                      ~value=first.sharedElementAnimatedValue,
+                      ~value=sourceScreen.sharedElementAnimatedValue,
                       ~toValue=`raw(1.0),
                       (),
                     ),
@@ -325,11 +326,11 @@ module CreateStackNavigator = (Config: {type route;}) => {
                   ~callback=
                     end_ =>
                       switch (transition) {
-                      | `Pop when end_##finished =>
-                        self.send(RemoveStaleScreen(second.key))
+                      | `Pop when end_##finished => Js.log("Removing Stale")
+                      /* self.send(RemoveStaleScreen(second.key)) */
                       | `Replace when end_##finished =>
                         self.send(ReplaceScreenFinish(first.key))
-                      | _ => ()
+                      | _ => self.send(SetNavigating(false))
                       },
                   (),
                 );
@@ -387,6 +388,8 @@ module CreateStackNavigator = (Config: {type route;}) => {
               state.screens
               ->Belt.Array.keep((screen: screenConfig) => screen.key !== key),
           })
+        | SetNavigating(newState) =>
+          ReasonReact.Update({...state, navigating: newState})
         /***
          * Pushes new screen onto the stack
          *
@@ -406,7 +409,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
                   |> ReArray.append(
                        {
                          route,
-                         animation: Animation.fadeVertical,
+                         animation: Animation.fade,
                          animatedValue: Animated.Value.create(1.0),
                          key: UUID.generate(),
                          didMount: false,
@@ -463,6 +466,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
         | RemoveStaleScreen(key) =>
           ReasonReact.Update({
             ...state,
+            navigating: false,
             screens:
               state.screens
               ->Belt.Array.keep((screen: screenConfig) => screen.key !== key),
@@ -472,6 +476,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
             pendingTransition: None,
             activeScreen: state.activeScreen - 1,
             screens: state.screens |> ReArray.remove(state.activeScreen),
+            navigating: false,
           })
         /***
          * Sets option for a screen with a given key.
@@ -532,32 +537,36 @@ module CreateStackNavigator = (Config: {type route;}) => {
                              screen.key,
                              screen,
                              self.state.screens,
+                             self.state.navigating,
                            ),
                        )
                      }
                      {
-                       screen.sharedElements
-                       ->Belt.Array.map(element => {
-                           let targetElement =
-                             sharedElements
-                             ->find(target =>
-                                 target.name == element.name
-                                 && target.type_ != element.type_
-                               );
-                           let style =
-                             targetElement
-                             ->Belt.Option.map(target =>
-                                 element.getAnimatedStyle(
-                                   screen.sharedElementAnimatedValue,
-                                   target.originalCoordinates,
+                       self.state.navigating ?
+                         screen.sharedElements
+                         ->Belt.Array.map(element => {
+                             let targetElement =
+                               sharedElements
+                               ->find(target =>
+                                   target.name == element.name
+                                   && target.type_ != element.type_
+                                 );
+                             Js.log(targetElement);
+                             let style =
+                               targetElement
+                               ->Belt.Option.map(target =>
+                                   element.getAnimatedStyle(
+                                     screen.sharedElementAnimatedValue,
+                                     target.originalCoordinates,
+                                   )
                                  )
-                               )
-                             ->Belt.Option.getWithDefault(Style.style([]));
-                           <Animated.View style key=element.name>
-                             {element.renderChildren()}
-                           </Animated.View>;
-                         })
-                       |> ReasonReact.array
+                               ->Belt.Option.getWithDefault(Style.style([]));
+                             <Animated.View style key={element.name}>
+                               {element.renderChildren()}
+                             </Animated.View>;
+                           })
+                         |> ReasonReact.array :
+                         ReasonReact.null
                      }
                    </Animated.View>;
                  })
@@ -575,8 +584,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
             ~navigation: navigation,
             ~style=?,
             ~animation=?,
-            /* Remove this */
-            ~headerTitle=?,
+            ~headerTitle="",
             children,
           ) => {
         ...component,
@@ -594,17 +602,45 @@ module CreateStackNavigator = (Config: {type route;}) => {
       type state = {
         nodeRef: option(ReasonReact.reactRef),
         measured: bool,
+        animatedValue: Animated.Value.t,
       };
       type action =
         | Set(option(ReasonReact.reactRef))
-        | MeasureLayout;
+        | MeasureLayout
+        | StartAnimation(bool);
       let component = ReasonReact.reducerComponent("SharedElement");
 
       let make = (~navigation: navigation, ~name, ~type_, children) => {
         ...component,
-        initialState: () => {nodeRef: None, measured: false},
+        initialState: () => {
+          nodeRef: None,
+          measured: false,
+          animatedValue: Animated.Value.create(1.),
+        },
         reducer: (action, state) =>
           switch (action) {
+          | StartAnimation(initial) =>
+            SideEffects(
+              (
+                self => {
+                  Animated.Value.setValue(
+                    self.state.animatedValue,
+                    initial ? 1. : 0.,
+                  );
+                  Animated.start(
+                    Animated.timing(
+                      ~value=self.state.animatedValue,
+                      ~toValue=`raw(initial ? 0. : 1.),
+                      ~duration=700.,
+                      ~easing=Easing.out(Easing.poly(3.)),
+                      (),
+                    ),
+                    (),
+                  );
+                  ();
+                }
+              ),
+            )
           | Set(nodeRef) =>
             switch (state.nodeRef) {
             | Some(_) => NoUpdate
@@ -660,20 +696,23 @@ module CreateStackNavigator = (Config: {type route;}) => {
               ),
             )
           },
+        didUpdate: ({oldSelf, newSelf}) =>
+          if (navigation.navigating) {
+            newSelf.send(StartAnimation(true));
+          },
         render: self =>
-          <View
+          <Animated.View
             ref={
               node =>
                 self.state.nodeRef == None ?
                   self.send(Set(Js.Nullable.toOption(node))) : ()
             }
             onLayout={_ => self.send(MeasureLayout)}
-            style=Style.style([ 
-                              /* Hide when transition start (StartTransition)*/
-            ])
-          >
+            style=Style.(
+              style([opacity(Float(navigation.navigating ? 0. : 1.))])
+            )>
             {children()}
-          </View>,
+          </Animated.View>,
       };
     };
   };
