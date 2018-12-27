@@ -155,7 +155,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
             ),
             ~callback=
               _end_ =>
-                if (toValue != 0) {
+                if (toValue != 0 && (self.ReasonReact.state.activeScreen - 1) >= 0) {
                   let {screens, activeScreen} = self.ReasonReact.state;
                   Animated.Value.setValue(
                     screens[activeScreen - 1].animatedValue,
