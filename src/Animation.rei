@@ -32,6 +32,8 @@ let slideHorizontal: t;
 
 let fadeVertical: t;
 
+let fade: t;
+
 /**
  * Platform-specific default animation that is picked by navigators when
  * nothing else is set
