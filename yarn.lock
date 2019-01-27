@@ -3120,6 +3120,11 @@ lodash.escape@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
+lodash.findlast@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.findlast/-/lodash.findlast-4.6.0.tgz#ea8bb78cf2e7e7804fc8aeb7d1953e07fe31fbc8"
+  integrity sha1-6ou3jPLn54BPyK630ZU+B/4x+8g=
+
 lodash.isarguments@^3.0.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz#2f573d85c6a24289ff00663b491c1d338ff3458a"
@@ -4046,6 +4051,13 @@ react-native-gesture-handler@^1.0.0-alpha.41:
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.2"
     prop-types "^15.5.10"
+
+react-native-magic-move@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-magic-move/-/react-native-magic-move-0.4.0.tgz#02d080594d5a5c22de2e2990a6d5d33f2bddcefa"
+  integrity sha512-D2PTTl8DokEm2x2XzIJ5/RTMnGQs1usZh3ql4//Z4vOxJd/KvIV/l7TfFx2RjZ+tR3s6kRv988yQ/vMQV94LVQ==
+  dependencies:
+    lodash.findlast "^4.6.0"
 
 react-native@^0.55.4:
   version "0.55.4"
