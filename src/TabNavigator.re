@@ -1,4 +1,6 @@
-open BsReactNative;
+open ReactNative;
+
+module Style = GoldStyle;
 
 module Styles = {
   open Style;
@@ -41,8 +43,8 @@ module Styles = {
       ),
     ]);
   let tabBar =
-    switch (Platform.os()) {
-    | Platform.Android =>
+    switch (Platform.os) {
+    | _ as os when os == Platform.android =>
       style([
         flexDirection(Row),
         backgroundColor(String("#fff")),
@@ -88,15 +90,15 @@ module Styles = {
     ]);
   };
   let tabBarItemContainer =
-    switch (Platform.os()) {
-    | Platform.Android =>
+    switch (Platform.os) {
+    | _ as os when os == Platform.android =>
       style([flex(1.), justifyContent(Center), alignItems(Center)])
     | _ => style([flex(1.), justifyContent(Center), alignItems(Center)])
     };
   let tabBarItem = style([alignItems(Center)]);
   let tabBarItemIcon =
-    switch (Platform.os()) {
-    | Platform.Android =>
+    switch (Platform.os) {
+    | _ as os when os == Platform.android =>
       style([
         height(Pt(24.)),
         width(Pt(24.)),
@@ -106,8 +108,8 @@ module Styles = {
     | _ => style([height(Pt(20.)), width(Pt(20.))])
     };
   let tabBarItemText = (~textSize) =>
-    switch (Platform.os()) {
-    | Platform.Android =>
+    switch (Platform.os) {
+    | _ as os when os == Platform.android =>
       style([
         paddingTop(
           switch (textSize) {
@@ -182,16 +184,13 @@ module CreateTabNavigator = (Config: {type route;}) => {
     };
     module TabBar = {
       module Item = {
-        let component = ReasonReact.statelessComponent("TabBarItem");
+        [@react.component]
         let make =
             (
               ~label,
-              ~icon: option(Image.imageSource)=?,
+              ~icon: option(Image.Source.t)=?,
               ~style: option(Style.t)=?,
-              _children,
-            ) => {
-          ...component,
-          render: _self =>
+            ) => ({
             switch (label, icon) {
             | (label, Some(icon)) =>
               <View style=Styles.tabBarItem>
@@ -201,13 +200,13 @@ module CreateTabNavigator = (Config: {type route;}) => {
                   | "" => ReasonReact.null
                   | _ =>
                     let itemText =
-                      switch (Platform.os()) {
-                      | Platform.Android => String.uppercase(label)
+                      switch (Platform.os) {
+                      | _ as os when os == Platform.android => String.uppercase(label)
                       | _ => label
                       };
                     <Text
                       style={
-                        Style.concat([
+                        Style.list([
                           Styles.tabBarItemText(~textSize=Small),
                           switch (style) {
                           | Some(style) => style
@@ -225,13 +224,13 @@ module CreateTabNavigator = (Config: {type route;}) => {
               | "" => ReasonReact.null
               | _ =>
                 let itemText =
-                  switch (Platform.os()) {
-                  | Platform.Android => String.uppercase(label)
+                  switch (Platform.os) {
+                  | _ as os when os == Platform.android => String.uppercase(label)
                   | _ => label
                   };
                 <Text
                   style={
-                    Style.concat([
+                    Style.list([
                       Styles.tabBarItemText(~textSize=Regular),
                       switch (style) {
                       | Some(style) => style
@@ -242,17 +241,18 @@ module CreateTabNavigator = (Config: {type route;}) => {
                   {ReasonReact.string(itemText)}
                 </Text>;
               }
-            },
-        };
+            }
+        });
       };
       let component = ReasonReact.statelessComponent("TabBar");
-      let make = (~tabBarProps: tabBarProps, _children) => {
+      [@react.component]
+      let make = (~tabBarProps: tabBarProps) => ReactCompat.useRecordApi({
         ...component,
         render: _self =>
           <View style=Styles.tabBar>
             {
-              switch (Platform.os()) {
-              | Platform.Android =>
+              switch (Platform.os) {
+              | _ as os when os == Platform.android =>
                 tabBarProps.screens
                 |> Array.mapi((index, screen) => {
                      let isActive = tabBarProps.currentRoute === screen.route;
@@ -288,7 +288,7 @@ module CreateTabNavigator = (Config: {type route;}) => {
               |> ReasonReact.array
             }
           </View>,
-      };
+      });
     };
     let getNavigationInterface =
         (~send, ~currentRoute, ~screens, ~index, ~isActive) => {
@@ -299,6 +299,7 @@ module CreateTabNavigator = (Config: {type route;}) => {
       isActive,
     };
     let component = ReasonReact.reducerComponent("TabNavigator");
+    [@react.component]
     let make =
         (
           ~initialRoute,
@@ -307,8 +308,8 @@ module CreateTabNavigator = (Config: {type route;}) => {
           ~safeAreaViewBackgroundColor: option(string)=?,
           ~indicatorColor: option(string)=?,
           ~onNavigationReady=ignore,
-          children,
-        ) => {
+          ~children,
+        ) => ReactCompat.useRecordApi({
       ...component,
       initialState: () => {
         screens:
@@ -397,15 +398,16 @@ module CreateTabNavigator = (Config: {type route;}) => {
             }
           </View>
         </SafeAreaView>,
-    };
+    });
     module Screen = {
       let component = ReasonReact.statelessComponent("Screen");
+      [@react.component]
       let make =
           (
             ~navigation,
             ~tabItem: tabItemProps => ReasonReact.reactElement,
             children,
-          ) => {
+          ) => ReactCompat.useRecordApi({
         ...component,
         didMount: _self => {
           navigation.setOptions({tabItem: tabItem});
@@ -415,7 +417,7 @@ module CreateTabNavigator = (Config: {type route;}) => {
           navigation.isActive ?
             <View style=Styles.tabContainer> {children()} </View> :
             ReasonReact.null,
-      };
+      });
     };
   };
 };

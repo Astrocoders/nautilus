@@ -1,4 +1,6 @@
-open BsReactNative;
+open ReactNative;
+module Style = GoldStyle;
+module Animated = GoldStyle.Animated;
 
 type t = {
   func:
@@ -116,10 +118,7 @@ let fade = {
 };
 
 let default =
-  switch (Platform.os()) {
-  | Platform.Android => fadeVertical
-  | _ => slideHorizontal
-  };
+  Platform.os == Platform.android ? fadeVertical : slideHorizontal;
 
 let none = {
   ...default,

@@ -31,12 +31,13 @@
   },
   "homepage": "https://github.com/Astrocoders/nautilus#readme",
   "devDependencies": {
-    "bs-platform": "^4.0.5",
-    "bs-react-native": "^0.10.0",
+    "bs-platform": "^5.0.3",
+    "bs-react-native": "^0.11.0",
+    "bs-react-native-monorepo": "https://github.com/reasonml-community/bs-react-native.git",
     "react": "^16.3.0-alpha.1",
-    "react-native": "^0.55.4",
+    "react-native": "^0.59.5",
     "react-native-gesture-handler": "^1.0.0-alpha.41",
-    "reason-react": "^0.4.1"
+    "reason-react": "^0.7.0"
   },
   "peerDependencies": {
     "bs-react-native": "^0.10.0",
@@ -44,6 +45,7 @@
     "reason-react": "*"
   },
   "dependencies": {
-    "react-native-magic-move": "^0.4.0"
+    "react-native-magic-move": "^0.4.0",
+    "reason-react-compat": "^0.2.0"
   }
 }

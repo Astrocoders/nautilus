@@ -1,11 +1,13 @@
-open BsReactNative;
+open ReactNative;
+module Style = GoldStyle;
+module Animated = GoldStyle.Animated;
 
 type t = {
-  forHeaderCenter: 'a. Animated.value('a) => Style.t,
-  forHeaderLeft: 'a. Animated.value('a) => Style.t,
-  forHeaderLeftLabel: 'a. Animated.value('a) => Style.t,
-  forHeaderLeftButton: 'a. Animated.value('a) => Style.t,
-  forHeaderRight: 'a. Animated.value('a) => Style.t,
+  forHeaderCenter: 'a. GoldStyle.Animated.value('a) => Style.t,
+  forHeaderLeft: 'a. GoldStyle.Animated.value('a) => Style.t,
+  forHeaderLeftLabel: 'a. GoldStyle.Animated.value('a) => Style.t,
+  forHeaderLeftButton: 'a. GoldStyle.Animated.value('a) => Style.t,
+  forHeaderRight: 'a. GoldStyle.Animated.value('a) => Style.t,
 };
 
 let crossFadeInterpolation = (~startRange, ~midRange, ~endRange, value) =>
@@ -27,11 +29,11 @@ let crossFadeInterpolation = (~startRange, ~midRange, ~endRange, value) =>
 let floating = {
   forHeaderCenter: value => {
     let offset = float_of_int(Dimensions.get(`window)##width / 2 - 70 + 25);
-    Style.(
+    GoldStyle.(
       style([
         opacity(
-          Animated(
-            Animated.Value.interpolate(
+          GoldStyle.Animated(
+            GoldStyle.Animated.Value.interpolate(
               value,
               ~inputRange=[(-1.0), (-0.999), (-0.5), 0.0, 0.7, 0.999, 1.0],
               ~outputRange=`float([0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0]),
@@ -53,7 +55,7 @@ let floating = {
       ])
     );
   },
-  forHeaderLeft: _value => Style.style([]),
+  forHeaderLeft: _value => GoldStyle.style([]),
   forHeaderLeftButton: value =>
     Style.(
       style([
