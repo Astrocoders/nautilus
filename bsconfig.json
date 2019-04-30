@@ -22,8 +22,5 @@
       "public": "all",
       "subdirs": true
     }
-  ],
-  "js-post-build": {
-    "cmd": "./node_modules/bs-react-native-monorepo/git-monorepo-usage-trick"
-  }
+  ]
 }
