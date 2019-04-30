@@ -1,9 +1,11 @@
-open BsReactNative;
+open ReactNative;
 
 open Utils;
 
+module Style = GoldStyle;
+
 type config = {
-  style: option(BsReactNative.Style.t),
+  style: option(ReactNative.Style.t),
   title: option(string),
   center: option(returnsComponent),
   left: option(returnsComponent),
@@ -18,7 +20,7 @@ and screen = {
 and props = {
   screens: array(screen),
   activeScreen: int,
-  animatedValue: Animated.Interpolation.t,
+  animatedValue: GoldStyle.Animated.Interpolation.t,
   pop: string => unit,
 };
 
@@ -37,23 +39,26 @@ let scr = p => p.screens[p.activeScreen];
  * is used on Android devices that support this version.
  */
 module TouchableItem = {
-  let component = ReasonReact.statelessComponent("TouchableItem");
+  [@react.component]
   let make =
       (
         ~pressColor="rgba(0, 0, 0, .32)",
         ~onPress=() => (),
         ~borderless=true,
-        children,
+        ~children,
       ) => {
-    ...component,
-    render: _self =>
-      Platform.version() >= 21 && Platform.os() == Platform.Android ?
-        <TouchableNativeFeedback
-          onPress
-          background={TouchableNativeFeedback.ripple(pressColor, borderless)}>
-          ...children
-        </TouchableNativeFeedback> :
-        <TouchableOpacity onPress> ...children </TouchableOpacity>,
+    Platform.os == Platform.android
+      ? <TouchableNativeFeedback
+          onPress={_ => onPress()}
+          background={TouchableNativeFeedback.Background.ripple(
+            pressColor,
+            borderless,
+          )}>
+          children
+        </TouchableNativeFeedback>
+      : <TouchableOpacity onPress={_ => onPress()}>
+          children
+        </TouchableOpacity>;
   };
 };
 
@@ -79,9 +84,7 @@ module IOSImpl = {
          * SafeAreaView doesn't work on iOS < 11 and so, we add the
          * statusBar padding manually
          */
-        marginTop(
-          Pt(Platform.version() < 11 ? Constants.statusBarHeight : 0.0),
-        ),
+        marginTop(Pt(0.0)),
       ]);
     let fill = StyleSheet.absoluteFill;
     let center =
@@ -167,7 +170,9 @@ module IOSImpl = {
     | SetTitleWidth(string, float)
     | SetLeftWidth(string, float);
   let component = ReasonReact.reducerComponent("FloatingHeader");
-  let make = (~headerProps as props: props, _children) => {
+
+  [@react.component]
+  let make = (~headerProps as props: props) => ReactCompat.useRecordApi({
     ...component,
     initialState: () => {
       titleWidths: StringMap.empty,
@@ -201,21 +206,19 @@ module IOSImpl = {
        */
       let upperBound = float_of_int(Array.length(screens));
       let anim =
-        Animated.Value.interpolate(
+        GoldStyle.Animated.Value.interpolate(
           animatedValue,
           ~inputRange=[0.0, upperBound],
           ~outputRange=`float([0.0, upperBound]),
-          ~extrapolate=Animated.Interpolation.Clamp,
+          ~extrapolate=GoldStyle.Animated.Interpolation.Clamp,
           (),
         );
       let mask =
         <View style=Styles.iconMaskContainer>
           <Image
-            source={
-                     `Required(
-                       Packager.require("./assets/back-icon-mask.png"),
-                     )
-                   }
+            source={Image.Source.fromRequired(
+              Packager.require("./assets/back-icon-mask.png"),
+            )}
             style=Styles.iconMask
           />
           <View style=Styles.iconMaskFillerRect />
@@ -229,14 +232,14 @@ module IOSImpl = {
              * only once to prevent infinite loops.
              */
             self.state.leftWidths
-            |> StringMap.hasKey(key) ?
-              _e => () :
-              (
+            |> StringMap.hasKey(key)
+              ? _e => ()
+              : (
                 e =>
                   self.send(
                     SetLeftWidth(
                       key,
-                      RNEvent.NativeLayoutEvent.layout(e).width,
+                      e##nativeEvent##layout##width,
                     ),
                   )
               )
@@ -247,30 +250,30 @@ module IOSImpl = {
               p.animatedValue |> HeaderInterpolator.floating.forHeaderLeft,
             ])
           )>
-          {
-            switch (header.left) {
-            | Some(func) => func(p)
-            | None =>
-              p.activeScreen === 0 ?
-                <View /> :
-                <TouchableOpacity onPress=(_e => p.pop(key))>
-                  <View style=Styles.leftContainer>
-                    <Animated.View
-                      style={
-                        p.animatedValue
-                        |> HeaderInterpolator.floating.forHeaderLeftButton
-                      }>
-                      <Image
-                        style=Styles.leftIcon
-                        source={
-                                 `Required(
-                                   Packager.require("./assets/back-icon.png"),
-                                 )
-                               }
-                      />
-                    </Animated.View>
-                    {
-                      switch (p.screens[p.activeScreen - 1].header.title) {
+          {switch (header.left) {
+           | Some(func) => func(p)
+           | None =>
+             p.activeScreen === 0
+               ? <View />
+               : <TouchableOpacity onPress={_e => p.pop(key)}>
+                   <View style=Styles.leftContainer>
+                     <Animated.View
+                       style={
+                         p.animatedValue
+                         |> HeaderInterpolator.floating.forHeaderLeftButton
+                       }>
+                       <Image
+                         style=Styles.leftIcon
+                         source={
+                                  Image.Source.fromRequired(
+                                    Packager.require(
+                                      "./assets/back-icon.png",
+                                    ),
+                                  )
+                                }
+                       />
+                     </Animated.View>
+                     {switch (p.screens[p.activeScreen - 1].header.title) {
                       | Some(backTitle) =>
                         <Animated.View
                           style={
@@ -278,41 +281,35 @@ module IOSImpl = {
                             |> HeaderInterpolator.floating.forHeaderLeftLabel
                           }>
                           <Text style=Styles.leftTitle numberOfLines=1>
-                            {
-                              ReasonReact.string(
-                                /***
-                                 * Measure the space left for the back button and decide
-                                 * whether to print "Back" or the original back button,
-                                 * which is title of the previous scene.
-                                 */
-                                try (
-                                  {
-                                    let lw =
-                                      self.state.leftWidths
-                                      |> StringMap.find(key);
-                                    let tw =
-                                      self.state.titleWidths
-                                      |> StringMap.find(key);
-                                    let ww =
-                                      Dimensions.get(`window)##width
-                                      |> float_of_int;
-                                    lw +. 20.0 >= (ww -. tw) /. 2.0 ?
-                                      "Back" : backTitle;
-                                  }
-                                ) {
-                                | Not_found => backTitle
-                                },
-                              )
-                            }
+                            {ReasonReact.string(
+                               /***
+                                * Measure the space left for the back button and decide
+                                * whether to print "Back" or the original back button,
+                                * which is title of the previous scene.
+                                */
+                               try (
+                                 {let lw =
+                                    self.state.leftWidths
+                                    |> StringMap.find(key)
+                                  let tw =
+                                    self.state.titleWidths
+                                    |> StringMap.find(key)
+                                  let ww =
+                                    Dimensions.get(`window)##width
+                                    |> float_of_int
+                                  lw +. 20.0 >= (ww -. tw) /. 2.0
+                                    ? "Back" : backTitle}
+                               ) {
+                               | Not_found => backTitle
+                               },
+                             )}
                           </Text>
                         </Animated.View>
                       | None => ReasonReact.null
-                      }
-                    }
-                  </View>
-                </TouchableOpacity>
-            }
-          }
+                      }}
+                   </View>
+                 </TouchableOpacity>
+           }}
         </Animated.View>;
       };
       let renderCenter = p => {
@@ -326,44 +323,32 @@ module IOSImpl = {
           );
         <Animated.View
           style=containerStyle
-          onLayout={
-            e =>
-              self.send(
-                SetTitleWidth(
-                  key,
-                  RNEvent.NativeLayoutEvent.layout(e).width,
-                ),
-              )
+          onLayout={e =>
+            self.send(
+              SetTitleWidth(key, e##nativeEvent##layout##width),
+            )
           }>
-          {
-            switch (header.center) {
-            | Some(func) => func(p)
-            | None =>
-              <Text style=Styles.headerTitle numberOfLines=1>
-                {
-                  ReasonReact.string(
-                    header.title |> Js.Option.getWithDefault(""),
-                  )
-                }
-              </Text>
-            }
-          }
+          {switch (header.center) {
+           | Some(func) => func(p)
+           | None =>
+             <Text style=Styles.headerTitle numberOfLines=1>
+               {ReasonReact.string(
+                  header.title |> Js.Option.getWithDefault(""),
+                )}
+             </Text>
+           }}
         </Animated.View>;
       };
       let renderRight = p =>
         <Animated.View
-          style={
-            Style.concat([
-              Styles.right,
-              p.animatedValue |> HeaderInterpolator.floating.forHeaderRight,
-            ])
-          }>
-          {
-            switch (scr(p).header.right) {
-            | Some(func) => func(p)
-            | None => ReasonReact.null
-            }
-          }
+          style={Style.concat([
+            Styles.right,
+            p.animatedValue |> HeaderInterpolator.floating.forHeaderRight,
+          ])}>
+          {switch (scr(p).header.right) {
+           | Some(func) => func(p)
+           | None => ReasonReact.null
+           }}
         </Animated.View>;
       let lastIdx = Array.length(screens) - 1;
       <SafeAreaView
@@ -374,25 +359,24 @@ module IOSImpl = {
           ])
         )>
         <View style=Styles.header>
-          {
-            screens
-            |> Array.mapi((idx: int, screen) => {
-                 /**
+          {screens
+           |> Array.mapi((idx: int, screen) => {
+                /**
                   * Animated value in the header is screen index - since `interpolators`
                   * are generic, we subtract the index of the screen to make the animation
                   * a relation between -1, 0, 1 - just like in StackNavigator
                   */
-                 let animatedValue =
-                   Animated.Value.add(
-                     anim,
-                     Animated.Value.create(-. float_of_int(idx)),
-                   );
-                 let screenProps = {
-                   ...props,
-                   animatedValue,
-                   activeScreen: idx,
-                 };
-                 /**
+                let animatedValue =
+                  GoldStyle.Animated.Value.add(
+                    anim,
+                    GoldStyle.Animated.Value.create(-. float_of_int(idx)),
+                  );
+                let screenProps = {
+                  ...props,
+                  animatedValue,
+                  activeScreen: idx,
+                };
+                /**
                   * Animated has this bug with `nativeDriver` that when you setState
                   * from onLayout, it doesn't apply interpolated styles which results
                   * in an awkward glitch as all layers appear on top of each other.
@@ -400,44 +384,30 @@ module IOSImpl = {
                   * We hide the opacity of the entire "middle" section until its
                   * dimensions have been resolved.
                   */
-                 let initialOpacity =
-                   Style.(
-                     style(
-                       self.state.leftWidths
-                       |> StringMap.hasKey(screen.key)
-                       && self.state.titleWidths
-                       |> StringMap.hasKey(screen.key) ?
-                         [] : [opacity(Float(0.0))],
-                     )
-                   );
-                 /* Render a header for two last routes to improve performance */
-                 if (lastIdx - idx > 2) {
-                   ReasonReact.null;
-                 } else {
-                   <MaskedViewIOS
-                     key={screen.key}
-                     maskElement=mask
-                     style={Style.concat([Styles.fill, initialOpacity])}
-                     pointerEvents={activeScreen == idx ? `boxNone : `none}>
-                     {renderCenter(screenProps)}
-                     {renderLeft(screenProps)}
-                     {renderRight(screenProps)}
-                   </MaskedViewIOS>;
-                 };
-               })
-            |> ReasonReact.array
-          }
+                let initialOpacity =
+                  Style.(
+                    style(
+                      self.state.leftWidths
+                      |> StringMap.hasKey(screen.key)
+                      && self.state.titleWidths
+                      |> StringMap.hasKey(screen.key)
+                        ? [] : [opacity(Float(0.0))],
+                    )
+                  );
+                /* Render a header for two last routes to improve performance */
+                  ReasonReact.null;
+              })
+           |> ReasonReact.array}
         </View>
       </SafeAreaView>;
-    },
-  };
+    }
+  });
 };
 
 module IOS = {
-  let component = ReasonReact.statelessComponent("IOSHeader");
-  let make = (~headerProps as p: props, _children) => {
-    ...component,
-    render: _self => <IOSImpl headerProps=p />,
+  [@react.component]
+  let make = (~headerProps as p: props) => {
+    <IOSImpl headerProps=p />
   };
 };
 
@@ -479,34 +449,31 @@ module Android = {
     | Some(func) => func(p)
     | None =>
       <Text style=Styles.title>
-        {
-          ReasonReact.string(
-            scr(p).header.title |> Js.Option.getWithDefault(""),
-          )
-        }
+        {ReasonReact.string(
+           scr(p).header.title |> Js.Option.getWithDefault(""),
+         )}
       </Text>
     };
   let renderLeft = p =>
     switch (scr(p).header.left) {
     | Some(func) => func(p)
     | None =>
-      p.activeScreen > 0 ?
-        <TouchableItem onPress=(_e => p.pop(scr(p).key))>
-          <Image
-            style=Styles.icon
-            source={`Required(Packager.require("./assets/back-icon.png"))}
-          />
-        </TouchableItem> :
-        <View />
+      p.activeScreen > 0
+        ? <TouchableItem onPress={_e => p.pop(scr(p).key)}>
+            <Image
+              style=Styles.icon
+              source={Image.Source.fromRequired(Packager.require("./assets/back-icon.png"))}
+            />
+          </TouchableItem>
+        : <View />
     };
   let renderRight = p =>
     switch (scr(p).header.right) {
     | Some(func) => func(p)
     | None => ReasonReact.null
     };
-  let make = (~headerProps as p: props, _children) => {
-    ...component,
-    render: _self =>
+  [@react.component]
+  let make = (~headerProps as p: props) => {
       <View
         style=Style.(
           concat([
@@ -517,6 +484,6 @@ module Android = {
         {renderLeft(p)}
         {renderTitle(p)}
         {renderRight(p)}
-      </View>,
+      </View>
   };
 };

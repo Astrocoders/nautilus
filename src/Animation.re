@@ -1,4 +1,6 @@
-open BsReactNative;
+open ReactNative;
+module Style = GoldStyle;
+module Animated = GoldStyle.Animated;
 
 type t = {
   func:
@@ -89,11 +91,34 @@ let fadeVertical = {
   forHeader: _ => Style.style([]),
 };
 
+let fade = {
+  func:
+    Animated.timing(
+      ~duration=350.0,
+      ~easing=Easing.out(Easing.poly(5.0)),
+      ~useNativeDriver=true,
+      (),
+    ),
+  forCard: value =>
+    Style.(
+      style([
+        opacity(
+          Animated(
+            Animated.Value.interpolate(
+              value,
+              ~inputRange=[(-1.0), (-0.99), 0.0, 1.0],
+              ~outputRange=`float([0.0, 1.0, 1.0, 0.0]),
+              (),
+            ),
+          ),
+        ),
+      ])
+    ),
+  forHeader: _ => Style.style([]),
+};
+
 let default =
-  switch (Platform.os()) {
-  | Platform.Android => fadeVertical
-  | _ => slideHorizontal
-  };
+  Platform.os == Platform.android ? fadeVertical : slideHorizontal;
 
 let none = {
   ...default,
