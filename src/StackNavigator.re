@@ -595,6 +595,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
     module Screen = {
       let flexOne = Style.(style([flex(1.)]));
       let component = ReasonReact.statelessComponent("CallstackScreen");
+      [@react.component]
       let make =
           (
             ~navigation: navigation,
@@ -606,7 +607,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
             ~headerRight=?,
             ~animation=?,
             children,
-          ) => {
+          ) => ReactCompat.useRecordApi({
         ...component,
         didMount: _self => {
           navigation.setOptions({
@@ -626,7 +627,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
           let body = children();
           <View style=flexOne> body </View>;
         },
-      };
+      });
     };
   };
 };
