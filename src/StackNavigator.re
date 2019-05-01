@@ -606,7 +606,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
             ~headerCenter=?,
             ~headerRight=?,
             ~animation=?,
-            children,
+            ~children,
           ) => ReactCompat.useRecordApi({
         ...component,
         didMount: _self => {
