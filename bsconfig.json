@@ -1,5 +1,5 @@
 {
-  "name": "nautilus",
+  "name": "@astrocoders/nautilus",
   "bsc-flags": ["-bs-no-version-header", "-bs-super-errors"],
   "refmt": 3,
   "bs-dependencies": [
@@ -11,7 +11,7 @@
   "reason": {
     "react-jsx": 3
   },
-  "namespace": true,
+  "namespace": "nautilus",
   "package-specs": {
     "module": "commonjs",
     "in-source": true
