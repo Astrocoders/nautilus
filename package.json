@@ -1,6 +1,6 @@
 {
-  "name": "nautilus",
-  "version": "0.1.0",
+  "name": "@astrocoders/nautilus",
+  "version": "0.2.0",
   "description": "Nautilus",
   "main": "index.js",
   "scripts": {
@@ -41,9 +41,9 @@
   },
   "peerDependencies": {
     "bs-react-native-jsx3-compat": "^0.11.0",
-    "reason-react-native": "^0.60.0",
     "react-native-gesture-handler": "*",
-    "reason-react": "*"
+    "reason-react": "*",
+    "reason-react-native": "^0.60.0"
   },
   "dependencies": {
     "react-native-magic-move": "^0.4.0",
