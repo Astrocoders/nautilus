@@ -116,7 +116,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
       let animatedProgress =
         GoldStyle.Animated.Value.interpolate(
           animatedValue,
-          ~inputRange=[0.0, float_of_int(screenWidth)],
+          ~inputRange=[0.0, screenWidth],
           ~outputRange=`float([0.0, 1.0]),
           ~extrapolate=GoldStyle.Animated.Interpolation.Clamp,
           (),
@@ -133,20 +133,20 @@ module CreateStackNavigator = (Config: {type route;}) => {
         switch (e##state) {
         | 5 =>
           let toValue =
-            e##translationX > screenWidth / 2 || e##velocityX > 150.00
-              ? screenWidth : 0;
+            e##translationX > screenWidth /. 2. || e##velocityX > 150.00
+              ? screenWidth : 0.;
 
           GoldStyle.Animated.start(
             GoldStyle.Animated.spring(
               ~value=animatedValue,
               ~velocity=e##velocityX,
               ~useNativeDriver=true,
-              ~toValue=`raw(float_of_int(toValue)),
+              ~toValue=`raw(toValue),
               (),
             ),
             ~callback=
               _end_ =>
-                if (toValue != 0
+                if (toValue != 0.
                     && self.ReasonReact.state.activeScreen
                     - 1 >= 0) {
                   let {screens, activeScreen} = self.ReasonReact.state;
@@ -543,7 +543,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
           <View style=Styles.stackContainer>
             <Gestures.PanHandler
               minDeltaX=aquaPoint
-              hitSlop={"right": aquaPoint - screenWidth}
+              hitSlop={"right": aquaPoint - int_of_float(screenWidth)}
               maxDeltaX=screenWidth
               enabled={size > 1}
               onGestureEvent=Gestures.handler

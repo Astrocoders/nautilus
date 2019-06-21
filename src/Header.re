@@ -296,7 +296,6 @@ module IOSImpl = {
                                     |> StringMap.find(key)
                                   let ww =
                                     Dimensions.get(`window)##width
-                                    |> float_of_int
                                   lw +. 20.0 >= (ww -. tw) /. 2.0
                                     ? "Back" : backTitle}
                                ) {

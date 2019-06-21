@@ -1030,9 +1030,10 @@ bs-platform@^5.0.3:
   resolved "https://registry.yarnpkg.com/bs-platform/-/bs-platform-5.0.3.tgz#2b167603ef52574cb9534fabab702f6013715e6c"
   integrity sha512-GAeypBebeDGTay5kJ3v5Z3Whp1Q4zQ0hAttflVtPG3zps88xDZnVAlS3JGIIBDmJFEMyNtv5947a/IWKvWXcPw==
 
-"bs-react-native-monorepo@https://github.com/reasonml-community/bs-react-native.git":
-  version "0.0.0"
-  resolved "https://github.com/reasonml-community/bs-react-native.git#b78fe964c147eace743a1013c4c7176c0074cc24"
+bs-react-native-jsx3-compat@^0.11.0:
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/bs-react-native-jsx3-compat/-/bs-react-native-jsx3-compat-0.11.1.tgz#643699594056e14dc61a719d0741b9c94d0c08fe"
+  integrity sha512-/+2DaxWBlRwjGP7luqn3hPWwcgabCm3uzRay6ly/md0JCSb/xsF4KgsS6VMHx0rZsndT81AfidlKb4rRQEaKUg==
 
 bser@^2.0.0:
   version "2.0.0"
@@ -3682,10 +3683,14 @@ reason-react-compat@^0.2.0:
   resolved "https://registry.yarnpkg.com/reason-react-compat/-/reason-react-compat-0.2.0.tgz#1caf4ec72e7c5ad523dd68b485ac265ca6497c01"
   integrity sha512-wfnod0z9g+HkXhEqDj3Fq9hVUuOtLN7AgUj5XR1VVzldzzz4eepBGaTPAfqugTKHFqLDplN9b5TOFge148mYcg==
 
-reason-react@^0.7.0:
+reason-react-native@^0.60.0:
+  version "0.60.0"
+  resolved "https://registry.yarnpkg.com/reason-react-native/-/reason-react-native-0.60.0.tgz#7adb9837f28d79d9f1e009b5d01ae864aff15d51"
+  integrity sha512-7vq7KIaY1kGb5xnWVewuy8ttBx7/HAgeKfiwDYV3rij6Z89vU6QIheR6rENV8UxaKwRN/Gw168ladWLM042k9A==
+
+"reason-react@https://github.com/reasonml/reason-react.git#835b90c":
   version "0.7.0"
-  resolved "https://registry.yarnpkg.com/reason-react/-/reason-react-0.7.0.tgz#46a975c321e81cd51310d7b1a02418ca7667b0d6"
-  integrity sha512-czR/f0lY5iyLCki9gwftOFF5Zs40l7ZSFmpGK/Z6hx2jBVeFDmIiXB8bAQW/cO6IvtuEt97OmsYueiuOYG9XjQ==
+  resolved "https://github.com/reasonml/reason-react.git#835b90c1c73827632a9819a353a404380724b1d2"
   dependencies:
     react ">=16.8.1"
     react-dom ">=16.8.1"

@@ -26,7 +26,7 @@ let slideHorizontal = {
       (),
     ),
   forCard: value => {
-    let screenWidth = float(Dimensions.get(`window)##width);
+    let screenWidth = Dimensions.get(`window)##width;
     Style.(
       style([
         opacity(

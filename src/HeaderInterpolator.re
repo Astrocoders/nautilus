@@ -28,7 +28,7 @@ let crossFadeInterpolation = (~startRange, ~midRange, ~endRange, value) =>
 
 let floating = {
   forHeaderCenter: value => {
-    let offset = float_of_int(Dimensions.get(`window)##width / 2 - 70 + 25);
+    let offset = (Dimensions.get(`window)##width /. 2. -. 70. +. 25.);
     GoldStyle.(
       style([
         opacity(
@@ -72,7 +72,7 @@ let floating = {
       ])
     ),
   forHeaderLeftLabel: value => {
-    let offset = float_of_int(Dimensions.get(`window)##width / 2 - 70 + 25);
+    let offset = (Dimensions.get(`window)##width /. 2. -. 70. +. 25.);
     Style.(
       style([
         opacity(

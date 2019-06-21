@@ -72,7 +72,7 @@ module Styles = {
     };
   let tabBarIndicator = (denominator, itemIndex, indicatorColor) => {
     let itemWidth =
-      float_of_int(Dimensions.get(`window)##width) /. denominator;
+      (Dimensions.get(`window)##width) /. denominator;
     style([
       position(Absolute),
       bottom(Pt(0.)),
