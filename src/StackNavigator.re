@@ -1,6 +1,6 @@
 open ReactNative;
 
-module Style = GoldStyle;
+module Style = BsReactNative.Style;
 
 open Utils;
 
@@ -23,8 +23,7 @@ module Styles = {
       shadowOpacity(0.2),
       shadowRadius(5.0),
     ]);
-  let stackContainer =
-    concat([flex, style([flexDirection(ColumnReverse)])]);
+  let stackContainer = list([flex, style([flexDirection(ColumnReverse)])]);
 };
 
 type commonNavigation('route, 'options) = {
@@ -41,7 +40,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
       route: Config.route,
       key: string,
       header: Header.config,
-      animatedValue: GoldStyle.Animated.Value.t,
+      animatedValue: BsReactNative.Animated.Value.t,
       animation: Animation.t,
       didMount: bool,
       style: Style.t,
@@ -53,7 +52,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
     type state = {
       screens: array(screenConfig),
       pendingTransition: option(pendingTransition),
-      headerAnimatedValue: GoldStyle.Animated.Value.t,
+      headerAnimatedValue: BsReactNative.Animated.Value.t,
       activeScreen: int,
     };
     type persistedState = array(Config.route);
@@ -102,9 +101,9 @@ module CreateStackNavigator = (Config: {type route;}) => {
           "PanGestureHandler";
       };
       let screenWidth = Dimensions.get(`window)##width;
-      let animatedValue = GoldStyle.Animated.Value.create(0.0);
+      let animatedValue = BsReactNative.Animated.Value.create(0.0);
       let handler =
-        GoldStyle.Animated.event(
+        BsReactNative.Animated.event(
           [|{
               "nativeEvent": {
                 "translationX": animatedValue,
@@ -114,11 +113,11 @@ module CreateStackNavigator = (Config: {type route;}) => {
         );
       /** Interpolated progress in range of 0 to 1 (start to end) */
       let animatedProgress =
-        GoldStyle.Animated.Value.interpolate(
+        BsReactNative.Animated.Value.interpolate(
           animatedValue,
           ~inputRange=[0.0, screenWidth],
           ~outputRange=`float([0.0, 1.0]),
-          ~extrapolate=GoldStyle.Animated.Interpolation.Clamp,
+          ~extrapolate=BsReactNative.Animated.Interpolation.Clamp,
           (),
         );
       /**
@@ -136,8 +135,8 @@ module CreateStackNavigator = (Config: {type route;}) => {
             e##translationX > screenWidth /. 2. || e##velocityX > 150.00
               ? screenWidth : 0.;
 
-          GoldStyle.Animated.start(
-            GoldStyle.Animated.spring(
+          BsReactNative.Animated.start(
+            BsReactNative.Animated.spring(
               ~value=animatedValue,
               ~velocity=e##velocityX,
               ~useNativeDriver=true,
@@ -147,23 +146,23 @@ module CreateStackNavigator = (Config: {type route;}) => {
             ~callback=
               _end_ =>
                 if (toValue != 0.
-                    && self.ReasonReact.state.activeScreen
+                    && self.ReactUpdate.state.activeScreen
                     - 1 >= 0) {
-                  let {screens, activeScreen} = self.ReasonReact.state;
-                  GoldStyle.Animated.Value.setValue(
+                  let {screens, activeScreen} = self.ReactUpdate.state;
+                  BsReactNative.Animated.Value.setValue(
                     screens[activeScreen - 1].animatedValue,
                     0.0,
                   );
-                  GoldStyle.Animated.Value.setValue(
+                  BsReactNative.Animated.Value.setValue(
                     screens[activeScreen].animatedValue,
                     1.0,
                   );
-                  GoldStyle.Animated.Value.setValue(
+                  BsReactNative.Animated.Value.setValue(
                     self.state.headerAnimatedValue,
                     float_of_int(activeScreen - 1),
                   );
-                  GoldStyle.Animated.Value.setValue(animatedValue, 0.0);
-                  self.ReasonReact.send(RemoveLastScreen);
+                  BsReactNative.Animated.Value.setValue(animatedValue, 0.0);
+                  self.ReactUpdate.send(RemoveLastScreen);
                 },
             (),
           );
@@ -181,7 +180,6 @@ module CreateStackNavigator = (Config: {type route;}) => {
     /**
      * StackNavigator component
      */
-    let component = ReasonReact.reducerComponent("StackNavigator");
     [@react.component]
     let make =
         (
@@ -197,63 +195,37 @@ module CreateStackNavigator = (Config: {type route;}) => {
                       },
           ~onNavigationReady=ignore,
           ~children,
-        ) =>
-      ReactCompat.useRecordApi({
-        ...component,
-        initialState: () => {
-          let activeScreen = Array.length(initialState) - 1;
+        ) => {
+      let (state, send) =
+        ReactUpdate.useReducer(
           {
-            pendingTransition: None,
-            headerAnimatedValue:
-              GoldStyle.Animated.Value.create(float_of_int(activeScreen)),
-            screens:
-              initialState
-              |> Array.mapi((idx, route) =>
-                   {
-                     route,
-                     header: Header.default,
-                     animation: Animation.default,
-                     key: UUID.generate(),
-                     animatedValue:
-                       GoldStyle.Animated.Value.create(
-                         idx == activeScreen ? 0.0 : (-1.0),
-                       ),
-                     style: Styles.card,
-                     didMount: false,
-                   }
-                 ),
-            activeScreen,
-          };
-        },
-        didMount: self =>
-          onNavigationReady(
-            self.handle((cb, self) =>
-              cb(
-                getNavigationInterface(
-                  self.send,
-                  self.state.screens[self.state.activeScreen].key,
+            let activeScreen = Array.length(initialState) - 1;
+            {
+              pendingTransition: None,
+              headerAnimatedValue:
+                BsReactNative.Animated.Value.create(
+                  float_of_int(activeScreen),
                 ),
-              )
-            ),
-          ),
-        /***
-         * Begin animating two states as soon as the index changes.
-         *
-         * If screen we are transitioning to didn't mount yet, we delay the transition
-         * until that happens.
-         */
-        didUpdate: ({newSelf: self}) =>
-          onStateChange(
-            self.state.screens |> Array.map(screen => screen.route),
-          ),
-        /***
-         * StackNavigator router
-         *
-         * Most actions are indempotent and have `isActiveScreen(state, key)` check
-         * to make sure we only accept one action from the screen that changes the
-         * state.
-         */
-        reducer: (action, state) =>
+              screens:
+                initialState
+                |> Array.mapi((idx, route) =>
+                     {
+                       route,
+                       header: Header.default,
+                       animation: Animation.default,
+                       key: UUID.generate(),
+                       animatedValue:
+                         BsReactNative.Animated.Value.create(
+                           idx == activeScreen ? 0.0 : (-1.0),
+                         ),
+                       style: Styles.card,
+                       didMount: false,
+                     }
+                   ),
+              activeScreen,
+            };
+          },
+          (action, state) =>
           switch (action) {
           /***
            * Starts Animated transition between two screens
@@ -278,11 +250,8 @@ module CreateStackNavigator = (Config: {type route;}) => {
               self => {
                 let (first, second) =
                   transition == `Push || transition == `Replace
-                    ? (
-                      self.ReasonReact.state.screens[fromIdx],
-                      self.state.screens[toIdx],
-                    )
-                    : (self.state.screens[toIdx], self.state.screens[fromIdx]);
+                    ? (state.screens[fromIdx], state.screens[toIdx])
+                    : (state.screens[toIdx], state.screens[fromIdx]);
                 let (fstValues, sndValues) =
                   switch (transition) {
                   | `Push => ((0.0, (-1.0)), (1.0, 0.0))
@@ -296,23 +265,23 @@ module CreateStackNavigator = (Config: {type route;}) => {
                  * Since `bs-react-native` doesn't currently support `fromValue` attribute,
                  * we explicitly setValues before starting a new animation.
                  */
-                GoldStyle.Animated.Value.setValue(
+                BsReactNative.Animated.Value.setValue(
                   first.animatedValue,
                   fstValues |> fst,
                 );
-                GoldStyle.Animated.Value.setValue(
+                BsReactNative.Animated.Value.setValue(
                   second.animatedValue,
                   sndValues |> fst,
                 );
-                GoldStyle.Animated.start(
-                  GoldStyle.Animated.parallel(
+                BsReactNative.Animated.start(
+                  BsReactNative.Animated.parallel(
                     [|
                       second.animation.func(
                         ~value=Gestures.animatedValue,
                         ~toValue=`raw(0.0),
                       ),
                       second.animation.func(
-                        ~value=self.state.headerAnimatedValue,
+                        ~value=state.headerAnimatedValue,
                         ~toValue=`raw(float_of_int(toIdx)),
                       ),
                       second.animation.func(
@@ -337,7 +306,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
                       },
                   (),
                 );
-                ();
+                None;
               },
             )
           | ReplaceScreen(route, key) =>
@@ -355,7 +324,8 @@ module CreateStackNavigator = (Config: {type route;}) => {
                            route,
                            header: Header.default,
                            animation: Animation.default,
-                           animatedValue: GoldStyle.Animated.Value.create(1.0),
+                           animatedValue:
+                             BsReactNative.Animated.Value.create(1.0),
                            key: UUID.generate(),
                            didMount: false,
                            style: Styles.card,
@@ -363,23 +333,25 @@ module CreateStackNavigator = (Config: {type route;}) => {
                          index,
                        ),
                 },
-                self =>
+                self => {
                   self.send(
                     StartTransition(
                       `Replace,
                       oldActiveScreen,
                       self.state.activeScreen,
                     ),
-                  ),
+                  );
+                  None;
+                },
               );
             } else {
-              ReasonReact.NoUpdate;
+              ReactUpdate.NoUpdate;
             }
           /***
            * Rearranges the index after removing the replaced screen
            */
           | ReplaceScreenFinish(key) =>
-            ReasonReact.Update({
+            Update({
               ...state,
               activeScreen: state.activeScreen - 1,
               screens:
@@ -409,7 +381,8 @@ module CreateStackNavigator = (Config: {type route;}) => {
                            route,
                            header: Header.default,
                            animation: Animation.default,
-                           animatedValue: GoldStyle.Animated.Value.create(1.0),
+                           animatedValue:
+                             BsReactNative.Animated.Value.create(1.0),
                            key: UUID.generate(),
                            didMount: false,
                            style: Styles.card,
@@ -417,17 +390,19 @@ module CreateStackNavigator = (Config: {type route;}) => {
                          index,
                        ),
                 },
-                self =>
+                self => {
                   self.send(
                     StartTransition(
                       `Push,
                       index - 1,
                       self.state.activeScreen,
                     ),
-                  ),
+                  );
+                  None;
+                },
               );
             } else {
-              ReasonReact.NoUpdate;
+              ReactUpdate.NoUpdate;
             }
           /***
            * Pops screen from the stack
@@ -441,13 +416,15 @@ module CreateStackNavigator = (Config: {type route;}) => {
                   pendingTransition: None,
                   activeScreen: activeScreen - 1,
                 },
-                self =>
+                self => {
                   self.send(
                     StartTransition(`Pop, activeScreen, activeScreen - 1),
-                  ),
+                  );
+                  None;
+                },
               );
             } else {
-              ReasonReact.NoUpdate;
+              ReactUpdate.NoUpdate;
             };
           /***
            * Removes a stale screen from the stack w/o animation.
@@ -456,7 +433,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
            * finishes and the screen is no longer within the viewport.
            */
           | RemoveStaleScreen(key) =>
-            ReasonReact.Update({
+            Update({
               ...state,
               screens:
                 state.screens
@@ -465,7 +442,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
                   ),
             })
           | RemoveLastScreen =>
-            ReasonReact.Update({
+            Update({
               ...state,
               pendingTransition: None,
               activeScreen: state.activeScreen - 1,
@@ -493,18 +470,33 @@ module CreateStackNavigator = (Config: {type route;}) => {
               animation:
                 animation |> Js.Option.getWithDefault(screens[idx].animation),
             };
-            ReasonReact.Update({...state, screens});
-          },
-        render: self => {
-          let size = Array.length(self.state.screens);
-          let screenWidth = Dimensions.get(`window)##width;
-          /**
+            Update({...state, screens});
+          }
+        );
+
+      React.useEffect0(() => {
+        onNavigationReady(
+          getNavigationInterface(send, state.screens[state.activeScreen].key),
+        );
+        None;
+      });
+
+      React.useEffect1(
+        () => {
+          onStateChange(state.screens |> Array.map(screen => screen.route));
+          None;
+        },
+        [|state|],
+      );
+
+      let size = Array.length(state.screens);
+      let screenWidth = Dimensions.get(`window)##width;
+      /**
          * Animation for a screen is always defined by the one that is after it.
          */
-          let getAnimation = (idx, screens: array(screenConfig)) =>
-            idx + 1 == size
-              ? screens[idx].animation : screens[idx + 1].animation;
-          /**
+      let getAnimation = (idx, screens: array(screenConfig)) =>
+        idx + 1 == size ? screens[idx].animation : screens[idx + 1].animation;
+      /**
          * Aquapoint is the distance between parent and its sibling
          * used by default on iOS (auto-layout constraint). This is
          * the used for defining how far from the screen your gesture
@@ -512,89 +504,82 @@ module CreateStackNavigator = (Config: {type route;}) => {
          *
          * Source: https://goo.gl/FVKnzZ
          */
-          let aquaPoint = 20;
-          let headerProps: Header.props = {
-            activeScreen: self.state.activeScreen,
-            animatedValue:
-              GoldStyle.Animated.Value.add(
-                self.state.headerAnimatedValue,
-                GoldStyle.Animated.Value.multiply(
-                  Gestures.animatedProgress,
-                  GoldStyle.Animated.Value.create(-1.0),
-                ),
-              ),
-            pop: key => self.send(PopScreen(key)),
-            screens:
-              self.state.screens
-              |> Array.mapi((idx, screen: screenConfig) =>
-                   {
-                     Header.header: screen.header,
-                     animation: getAnimation(idx, self.state.screens),
-                     key: screen.key,
-                   }
-                 ),
-          };
+      let aquaPoint = 20;
+      let headerProps: Header.props = {
+        activeScreen: state.activeScreen,
+        animatedValue:
+          BsReactNative.Animated.Value.add(
+            state.headerAnimatedValue,
+            BsReactNative.Animated.Value.multiply(
+              Gestures.animatedProgress,
+              BsReactNative.Animated.Value.create(-1.0),
+            ),
+          ),
+        pop: key => send(PopScreen(key)),
+        screens:
+          state.screens
+          |> Array.mapi((idx, screen: screenConfig) =>
+               {
+                 Header.header: screen.header,
+                 animation: getAnimation(idx, state.screens),
+                 key: screen.key,
+               }
+             ),
+      };
 
-          let makeHeaderProps = switch (Platform.os) {
-            | _ as os when os == Platform.android => Header.Android.makeProps
-            | _ => Header.IOS.makeProps
-            };
+      let makeHeaderProps =
+        switch (Platform.os) {
+        | _ as os when os == Platform.android => Header.Android.makeProps
+        | _ => Header.IOS.makeProps
+        };
 
-          <View style=Styles.stackContainer>
-            <Gestures.PanHandler
-              minDeltaX=aquaPoint
-              hitSlop={"right": aquaPoint - int_of_float(screenWidth)}
-              maxDeltaX=screenWidth
-              enabled={size > 1}
-              onGestureEvent=Gestures.handler
-              onHandlerStateChange={self.handle(Gestures.onStateChange)}>
-              <Animated.View style=Styles.flex>
-                {self.state.screens
-                 |> Array.mapi((idx, screen: screenConfig) => {
-                      let animation =
-                        if (size == 1) {
-                          Style.style([]);
-                        } else {
-                          GoldStyle.Animated.Value.add(
-                            Gestures.animatedProgress,
-                            screen.animatedValue,
-                          )
-                          |> getAnimation(idx, self.state.screens).forCard;
-                        };
-                      <Animated.View
-                        key={screen.key}
-                        style=Style.(
-                          concat([Styles.fill, screen.style, animation])
-                        )>
-                        {headerMode == Screen
-                           ? headerComponent(
-                             makeHeaderProps(
-                               ~headerProps={
-                                 ...headerProps,
-                                 activeScreen: idx,
-                               },
-                               
-                             ()
-                               ),
-                             )
-                           : <View />}
-                        {children(
-                           ~currentRoute=screen.route,
-                           ~navigation=
-                             getNavigationInterface(self.send, screen.key),
-                         )}
-                      </Animated.View>;
-                    })
-                 |> ReasonReact.array}
-              </Animated.View>
-            </Gestures.PanHandler>
-            {headerMode == Floating ? headerComponent(makeHeaderProps(~headerProps, ())) : <View />}
-          </View>;
-        },
-      });
+      <View style=Styles.stackContainer>
+        <Gestures.PanHandler
+          minDeltaX=aquaPoint
+          hitSlop={"right": aquaPoint - int_of_float(screenWidth)}
+          maxDeltaX=screenWidth
+          enabled={size > 1}
+          onGestureEvent=Gestures.handler
+          onHandlerStateChange=Gestures.onStateChange>
+          <Animated.View style=Styles.flex>
+            {state.screens
+             |> Array.mapi((idx, screen: screenConfig) => {
+                  let animation =
+                    if (size == 1) {
+                      Style.style([]);
+                    } else {
+                      BsReactNative.Animated.Value.add(
+                        Gestures.animatedProgress,
+                        screen.animatedValue,
+                      )
+                      |> getAnimation(idx, state.screens).forCard;
+                    };
+                  <Animated.View
+                    key={screen.key}
+                    style=Style.(list([Styles.fill, screen.style, animation]))>
+                    {headerMode == Screen
+                       ? headerComponent(
+                           makeHeaderProps(
+                             ~headerProps={...headerProps, activeScreen: idx},
+                             (),
+                           ),
+                         )
+                       : <View />}
+                    {children(
+                       ~currentRoute=screen.route,
+                       ~navigation=getNavigationInterface(send, screen.key),
+                     )}
+                  </Animated.View>;
+                })
+             |> React.array}
+          </Animated.View>
+        </Gestures.PanHandler>
+        {headerMode == Floating
+           ? headerComponent(makeHeaderProps(~headerProps, ())) : <View />}
+      </View>;
+    };
     module Screen = {
       let flexOne = Style.(style([flex(1.)]));
-      let component = ReasonReact.statelessComponent("CallstackScreen");
       [@react.component]
       let make =
           (
@@ -607,9 +592,9 @@ module CreateStackNavigator = (Config: {type route;}) => {
             ~headerRight=?,
             ~animation=?,
             ~children,
-          ) => ReactCompat.useRecordApi({
-        ...component,
-        didMount: _self => {
+            (),
+          ) => {
+        React.useEffect0(() => {
           navigation.setOptions({
             header: {
               title: headerTitle,
@@ -621,13 +606,11 @@ module CreateStackNavigator = (Config: {type route;}) => {
             animation,
             style,
           });
-          ();
-        },
-        render: _self => {
-          let body = children();
-          <View style=flexOne> body </View>;
-        },
-      });
+          None;
+        });
+        let body = children();
+        <View style=flexOne> body </View>;
+      };
     };
   };
 };

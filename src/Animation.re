@@ -1,6 +1,6 @@
 open ReactNative;
-module Style = GoldStyle;
-module Animated = GoldStyle.Animated;
+module Style = BsReactNative.Style;
+module Animated = BsReactNative.Animated;
 
 type t = {
   func:

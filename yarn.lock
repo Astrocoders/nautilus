@@ -3688,6 +3688,11 @@ reason-react-native@^0.60.0:
   resolved "https://registry.yarnpkg.com/reason-react-native/-/reason-react-native-0.60.0.tgz#7adb9837f28d79d9f1e009b5d01ae864aff15d51"
   integrity sha512-7vq7KIaY1kGb5xnWVewuy8ttBx7/HAgeKfiwDYV3rij6Z89vU6QIheR6rENV8UxaKwRN/Gw168ladWLM042k9A==
 
+reason-react-update@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/reason-react-update/-/reason-react-update-0.1.1.tgz#ea51c2e24fef7a061bb419496c0941f19f773924"
+  integrity sha512-wuP4MD79Gv0HLRy365vMa1JMXEqVQNNtq3ilB0Jw2ha8z9HR2Lzg/R+wPVWorXSnvoHkbE/vHaCRIA7ggn5WEA==
+
 "reason-react@https://github.com/reasonml/reason-react.git#835b90c":
   version "0.7.0"
   resolved "https://github.com/reasonml/reason-react.git#835b90c1c73827632a9819a353a404380724b1d2"

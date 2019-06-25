@@ -1,6 +1,5 @@
 open ReactNative;
-
-module Style = GoldStyle;
+module Style = BsReactNative.Style;
 
 module Styles = {
   open Style;
@@ -9,22 +8,22 @@ module Styles = {
     | Regular;
   let tabContainer = style([flex(1.)]);
   let screenContainer = isActive =>
-    isActive ?
-      style([
-        position(Absolute),
-        top(Pt(0.)),
-        right(Pt(0.)),
-        bottom(Pt(0.)),
-        left(Pt(0.)),
-      ]) :
-      style([
-        position(Absolute),
-        top(Pt(0.)),
-        right(Pt(0.)),
-        bottom(Pt(0.)),
-        left(Pt(0.)),
-        opacity(Float(0.)),
-      ]);
+    isActive
+      ? style([
+          position(Absolute),
+          top(Pt(0.)),
+          right(Pt(0.)),
+          bottom(Pt(0.)),
+          left(Pt(0.)),
+        ])
+      : style([
+          position(Absolute),
+          top(Pt(0.)),
+          right(Pt(0.)),
+          bottom(Pt(0.)),
+          left(Pt(0.)),
+          opacity(Float(0.)),
+        ]);
   let tabBarContainer =
       (safeAreaViewBackgroundColor: option(string), renderTabBar) =>
     style([
@@ -32,8 +31,7 @@ module Styles = {
       backgroundColor(
         switch (
           safeAreaViewBackgroundColor,
-          renderTabBar:
-            option((~tabBarProps: 'a) => ReasonReact.reactElement),
+          renderTabBar: option((~tabBarProps: 'a) => React.element),
         ) {
         | (None, None) => String("#f7f7f7")
         | (None, Some(_r)) => String("transparent")
@@ -71,8 +69,7 @@ module Styles = {
       ])
     };
   let tabBarIndicator = (denominator, itemIndex, indicatorColor) => {
-    let itemWidth =
-      (Dimensions.get(`window)##width) /. denominator;
+    let itemWidth = Dimensions.get(`window)##width /. denominator;
     style([
       position(Absolute),
       bottom(Pt(0.)),
@@ -190,105 +187,140 @@ module CreateTabNavigator = (Config: {type route;}) => {
               ~label,
               ~icon: option(Image.Source.t)=?,
               ~style: option(Style.t)=?,
-            ) => ({
-            switch (label, icon) {
-            | (label, Some(icon)) =>
-              <View style=Styles.tabBarItem>
-                <Image source=icon style=Styles.tabBarItemIcon />
-                {
-                  switch (label) {
-                  | "" => ReasonReact.null
-                  | _ =>
-                    let itemText =
-                      switch (Platform.os) {
-                      | _ as os when os == Platform.android => String.uppercase(label)
-                      | _ => label
-                      };
-                    <Text
-                      style={
-                        Style.list([
-                          Styles.tabBarItemText(~textSize=Small),
-                          switch (style) {
-                          | Some(style) => style
-                          | None => Style.style([])
-                          },
-                        ])
-                      }>
-                      {ReasonReact.string(itemText)}
-                    </Text>;
-                  }
-                }
-              </View>
-            | (label, None) =>
-              switch (label) {
-              | "" => ReasonReact.null
-              | _ =>
-                let itemText =
-                  switch (Platform.os) {
-                  | _ as os when os == Platform.android => String.uppercase(label)
-                  | _ => label
-                  };
-                <Text
-                  style={
-                    Style.list([
-                      Styles.tabBarItemText(~textSize=Regular),
-                      switch (style) {
-                      | Some(style) => style
-                      | None => Style.style([])
-                      },
-                    ])
-                  }>
-                  {ReasonReact.string(itemText)}
-                </Text>;
-              }
+              (),
+            ) => {
+          switch (label, icon) {
+          | (label, Some(icon)) =>
+            <View style=Styles.tabBarItem>
+              <Image source=icon style=Styles.tabBarItemIcon />
+              {switch (label) {
+               | "" => React.null
+               | _ =>
+                 let itemText =
+                   switch (Platform.os) {
+                   | _ as os when os == Platform.android =>
+                     String.uppercase(label)
+                   | _ => label
+                   };
+                 <Text
+                   style={Style.list([
+                     Styles.tabBarItemText(~textSize=Small),
+                     switch (style) {
+                     | Some(style) => style
+                     | None => Style.style([])
+                     },
+                   ])}>
+                   {React.string(itemText)}
+                 </Text>;
+               }}
+            </View>
+          | (label, None) =>
+            switch (label) {
+            | "" => React.null
+            | _ =>
+              let itemText =
+                switch (Platform.os) {
+                | _ as os when os == Platform.android =>
+                  String.uppercase(label)
+                | _ => label
+                };
+              <Text
+                style={Style.list([
+                  Styles.tabBarItemText(~textSize=Regular),
+                  switch (style) {
+                  | Some(style) => style
+                  | None => Style.style([])
+                  },
+                ])}>
+                {React.string(itemText)}
+              </Text>;
             }
-        });
+          };
+          switch (label, icon) {
+          | (label, Some(icon)) =>
+            <View style=Styles.tabBarItem>
+              <Image source=icon style=Styles.tabBarItemIcon />
+              {switch (label) {
+               | "" => React.null
+               | _ =>
+                 let itemText =
+                   switch (Platform.os) {
+                   | _ as os when os == Platform.android =>
+                     String.uppercase(label)
+                   | _ => label
+                   };
+                 <Text
+                   style={Style.list([
+                     Styles.tabBarItemText(~textSize=Small),
+                     switch (style) {
+                     | Some(style) => style
+                     | None => Style.style([])
+                     },
+                   ])}>
+                   {React.string(itemText)}
+                 </Text>;
+               }}
+            </View>
+          | (label, None) =>
+            switch (label) {
+            | "" => React.null
+            | _ =>
+              let itemText =
+                switch (Platform.os) {
+                | _ as os when os == Platform.android =>
+                  String.uppercase(label)
+                | _ => label
+                };
+              <Text
+                style={Style.list([
+                  Styles.tabBarItemText(~textSize=Regular),
+                  switch (style) {
+                  | Some(style) => style
+                  | None => Style.style([])
+                  },
+                ])}>
+                {React.string(itemText)}
+              </Text>;
+            }
+          };
+        };
       };
-      let component = ReasonReact.statelessComponent("TabBar");
       [@react.component]
-      let make = (~tabBarProps: tabBarProps) => ReactCompat.useRecordApi({
-        ...component,
-        render: _self =>
-          <View style=Styles.tabBar>
-            {
-              switch (Platform.os) {
-              | _ as os when os == Platform.android =>
-                tabBarProps.screens
-                |> Array.mapi((index, screen) => {
-                     let isActive = tabBarProps.currentRoute === screen.route;
-                     isActive ?
-                       <View
-                         key={string_of_int(index)}
-                         style={
-                           Styles.tabBarIndicator(
-                             float_of_int(Array.length(tabBarProps.screens)),
-                             index,
-                             tabBarProps.indicatorColor,
-                           )
-                         }
-                       /> :
-                       ReasonReact.null;
-                   })
-                |> ReasonReact.array
-              | _ => ReasonReact.null
-              }
-            }
-            {
-              tabBarProps.screens
-              |> Array.mapi((index, screen) => {
-                   let isActive = tabBarProps.currentRoute === screen.route;
-                   <TouchableWithoutFeedback
-                     key={string_of_int(index)}
-                     onPress={_e => tabBarProps.jumpTo(screen.route)}>
-                     <View style=Styles.tabBarItemContainer>
-                       {screen.tabItem({isActive: isActive})}
-                     </View>
-                   </TouchableWithoutFeedback>;
-                 })
-              |> ReasonReact.array
-            }
-          </View>,
-      });
+      let make = (~tabBarProps: tabBarProps) => {
+        <View style=Styles.tabBar>
+          {switch (Platform.os) {
+           | _ as os when os == Platform.android =>
+             tabBarProps.screens
+             |> Array.mapi((index, screen) => {
+                  let isActive = tabBarProps.currentRoute === screen.route;
+                  isActive
+                    ? <View
+                        key={string_of_int(index)}
+                        style={Styles.tabBarIndicator(
+                          float_of_int(Array.length(tabBarProps.screens)),
+                          index,
+                          tabBarProps.indicatorColor,
+                        )}
+                      />
+                    : ReasonReact.null;
+                })
+             |> React.array
+           | _ => React.null
+           }}
+          {tabBarProps.screens
+           |> Array.mapi((index, screen) => {
+                let isActive = tabBarProps.currentRoute === screen.route;
+                <TouchableWithoutFeedback
+                  key={string_of_int(index)}
+                  onPress={_e => tabBarProps.jumpTo(screen.route)}>
+                  <View style=Styles.tabBarItemContainer>
+                    {screen.tabItem({isActive: isActive})}
+                  </View>
+                </TouchableWithoutFeedback>;
+              })
+           |> React.array}
+        </View>;
+      };
     };
     let getNavigationInterface =
         (~send, ~currentRoute, ~screens, ~index, ~isActive) => {
@@ -298,7 +330,7 @@ module CreateTabNavigator = (Config: {type route;}) => {
       setOptions: options => send(SetOptions(options, index)),
       isActive,
     };
-    let component = ReasonReact.reducerComponent("TabNavigator");
+
     [@react.component]
     let make =
         (
@@ -309,115 +341,112 @@ module CreateTabNavigator = (Config: {type route;}) => {
           ~indicatorColor: option(string)=?,
           ~onNavigationReady=ignore,
           ~children,
-        ) => ReactCompat.useRecordApi({
-      ...component,
-      initialState: () => {
-        screens:
-          routes
-          |> Array.map(route =>
-               {route, tabItem: _tabItemProps => ReasonReact.null}
-             ),
-        currentRoute: initialRoute,
-      },
-      reducer: (action, state) =>
-        switch (action) {
-        | JumpTo(route) =>
-          if (route !== state.currentRoute) {
-            ReasonReact.Update({...state, currentRoute: route});
-          } else {
-            ReasonReact.NoUpdate;
+          (),
+        ) => {
+      let (state, send) =
+        ReactUpdate.useReducer(
+          {
+            screens:
+              routes
+              |> Array.map(route =>
+                   {route, tabItem: _tabItemProps => ReasonReact.null}
+                 ),
+            currentRoute: initialRoute,
+          },
+          (action, state) =>
+          switch (action) {
+          | JumpTo(route) =>
+            if (route !== state.currentRoute) {
+              Update({...state, currentRoute: route});
+            } else {
+              NoUpdate;
+            }
+          | SetOptions({tabItem}, index) =>
+            let screens = Js.Array.copy(state.screens);
+            screens[index] = {...screens[index], tabItem};
+            Update({...state, screens});
           }
-        | SetOptions({tabItem}, index) =>
-          let screens = Js.Array.copy(state.screens);
-          screens[index] = {...screens[index], tabItem};
-          ReasonReact.Update({...state, screens});
-        },
-      didMount: self => {
+        );
+
+      React.useEffect0(() => {
         onNavigationReady(
           getNavigationInterface(
-            ~send=self.send,
-            ~screens=self.state.screens,
-            ~currentRoute=self.state.currentRoute,
+            ~send,
+            ~screens=state.screens,
+            ~currentRoute=state.currentRoute,
             ~isActive=true,
             ~index=0,
           ),
         );
-        ();
-      },
-      render: self =>
-        <SafeAreaView
-          style={
-            Styles.tabBarContainer(safeAreaViewBackgroundColor, renderTabBar)
-          }>
-          <View style=Styles.tabContainer>
-            {
-              self.state.screens
-              |> Array.mapi((index, screen) => {
-                   let isActive = self.state.currentRoute === screen.route;
-                   <View
-                     key={string_of_int(index)}
-                     style={Styles.screenContainer(isActive)}
-                     pointerEvents={isActive ? `auto : `none}>
-                     {
-                       children(
-                         ~navigation=
-                           getNavigationInterface(
-                             ~send=self.send,
-                             ~screens=self.state.screens,
-                             ~currentRoute=screen.route,
-                             ~index,
-                             ~isActive,
-                           ),
-                       )
-                     }
-                   </View>;
-                 })
-              |> ReasonReact.array
-            }
-            {
-              switch (renderTabBar) {
-              | Some(renderTabBar) =>
-                renderTabBar(
-                  ~tabBarProps={
-                    screens: self.state.screens,
-                    currentRoute: self.state.currentRoute,
-                    jumpTo: route => self.send(JumpTo(route)),
-                    indicatorColor,
-                  },
-                )
-              | None =>
-                <TabBar
-                  tabBarProps={
-                    screens: self.state.screens,
-                    currentRoute: self.state.currentRoute,
-                    jumpTo: route => self.send(JumpTo(route)),
-                    indicatorColor,
-                  }
-                />
-              }
-            }
-          </View>
-        </SafeAreaView>,
-    });
+        None;
+      });
+
+      <SafeAreaView
+        style={Styles.tabBarContainer(
+          safeAreaViewBackgroundColor,
+          renderTabBar,
+        )}>
+        <View style=Styles.tabContainer>
+          {state.screens
+           |> Array.mapi((index, screen) => {
+                let isActive = state.currentRoute === screen.route;
+                <View
+                  key={string_of_int(index)}
+                  style={Styles.screenContainer(isActive)}
+                  pointerEvents={isActive ? `auto : `none}>
+                  {children(
+                     ~navigation=
+                       getNavigationInterface(
+                         ~send,
+                         ~screens=state.screens,
+                         ~currentRoute=screen.route,
+                         ~index,
+                         ~isActive,
+                       ),
+                   )}
+                </View>;
+              })
+           |> React.array}
+          {switch (renderTabBar) {
+           | Some(renderTabBar) =>
+             renderTabBar(
+               ~tabBarProps={
+                 screens: state.screens,
+                 currentRoute: state.currentRoute,
+                 jumpTo: route => send(JumpTo(route)),
+                 indicatorColor,
+               },
+             )
+           | None =>
+             <TabBar
+               tabBarProps={
+                 screens: state.screens,
+                 currentRoute: state.currentRoute,
+                 jumpTo: route => send(JumpTo(route)),
+                 indicatorColor,
+               }
+             />
+           }}
+        </View>
+      </SafeAreaView>;
+    };
+
     module Screen = {
-      let component = ReasonReact.statelessComponent("Screen");
       [@react.component]
       let make =
           (
             ~navigation,
             ~tabItem: tabItemProps => ReasonReact.reactElement,
             children,
-          ) => ReactCompat.useRecordApi({
-        ...component,
-        didMount: _self => {
+          ) => {
+        React.useEffect0(() => {
           navigation.setOptions({tabItem: tabItem});
-          ();
-        },
-        render: _self =>
-          navigation.isActive ?
-            <View style=Styles.tabContainer> {children()} </View> :
-            ReasonReact.null,
-      });
+          None;
+        });
+        navigation.isActive
+          ? <View style=Styles.tabContainer> {children()} </View>
+          : ReasonReact.null;
+      };
     };
   };
 };

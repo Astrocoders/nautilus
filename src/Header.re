@@ -2,7 +2,7 @@ open ReactNative;
 
 open Utils;
 
-module Style = GoldStyle;
+module Style = BsReactNative.Style;
 
 type config = {
   style: option(ReactNative.Style.t),
@@ -20,7 +20,7 @@ and screen = {
 and props = {
   screens: array(screen),
   activeScreen: int,
-  animatedValue: GoldStyle.Animated.Interpolation.t,
+  animatedValue: BsReactNative.Animated.Interpolation.t,
   pop: string => unit,
 };
 
@@ -46,6 +46,7 @@ module TouchableItem = {
         ~onPress=() => (),
         ~borderless=true,
         ~children,
+        ()
       ) => {
     Platform.os == Platform.android
       ? <TouchableNativeFeedback
@@ -169,29 +170,27 @@ module IOSImpl = {
   type action =
     | SetTitleWidth(string, float)
     | SetLeftWidth(string, float);
-  let component = ReasonReact.reducerComponent("FloatingHeader");
 
   [@react.component]
-  let make = (~headerProps as props: props) => ReactCompat.useRecordApi({
-    ...component,
-    initialState: () => {
-      titleWidths: StringMap.empty,
-      leftWidths: StringMap.empty,
-    },
-    reducer: (action, state) =>
+  let make = (~headerProps as props: props) => {
+      let (state, send) = ReactUpdate.useReducer({
+        titleWidths: StringMap.empty,
+        leftWidths: StringMap.empty,
+      }, 
+      (action, state) =>
       switch (action) {
       | SetTitleWidth(key, width) =>
-        ReasonReact.Update({
+        Update({
           ...state,
           titleWidths: state.titleWidths |> StringMap.add(key, width),
         })
       | SetLeftWidth(key, width) =>
-        ReasonReact.Update({
+        Update({
           ...state,
           leftWidths: state.leftWidths |> StringMap.add(key, width),
         })
-      },
-    render: self => {
+      }
+      );
       let {screens, activeScreen, animatedValue} = props;
       /**
        * The animated value passed to Header is screen index -
@@ -206,11 +205,11 @@ module IOSImpl = {
        */
       let upperBound = float_of_int(Array.length(screens));
       let anim =
-        GoldStyle.Animated.Value.interpolate(
+        BsReactNative.Animated.Value.interpolate(
           animatedValue,
           ~inputRange=[0.0, upperBound],
           ~outputRange=`float([0.0, upperBound]),
-          ~extrapolate=GoldStyle.Animated.Interpolation.Clamp,
+          ~extrapolate=BsReactNative.Animated.Interpolation.Clamp,
           (),
         );
       let mask =
@@ -231,12 +230,12 @@ module IOSImpl = {
              * We are interested in measuring the left container
              * only once to prevent infinite loops.
              */
-            self.state.leftWidths
+            state.leftWidths
             |> StringMap.hasKey(key)
               ? _e => ()
               : (
                 e =>
-                  self.send(
+                  send(
                     SetLeftWidth(
                       key,
                       e##nativeEvent##layout##width,
@@ -245,7 +244,7 @@ module IOSImpl = {
               )
           }
           style=Style.(
-            concat([
+            list([
               Styles.left,
               p.animatedValue |> HeaderInterpolator.floating.forHeaderLeft,
             ])
@@ -289,10 +288,10 @@ module IOSImpl = {
                                 */
                                try (
                                  {let lw =
-                                    self.state.leftWidths
+                                    state.leftWidths
                                     |> StringMap.find(key)
                                   let tw =
-                                    self.state.titleWidths
+                                    state.titleWidths
                                     |> StringMap.find(key)
                                   let ww =
                                     Dimensions.get(`window)##width
@@ -315,7 +314,7 @@ module IOSImpl = {
         let {key, header} = scr(p);
         let containerStyle =
           Style.(
-            concat([
+            list([
               Styles.center,
               p.animatedValue |> HeaderInterpolator.floating.forHeaderCenter,
             ])
@@ -323,7 +322,7 @@ module IOSImpl = {
         <Animated.View
           style=containerStyle
           onLayout={e =>
-            self.send(
+            send(
               SetTitleWidth(key, e##nativeEvent##layout##width),
             )
           }>
@@ -340,7 +339,7 @@ module IOSImpl = {
       };
       let renderRight = p =>
         <Animated.View
-          style={Style.concat([
+          style={Style.list([
             Styles.right,
             p.animatedValue |> HeaderInterpolator.floating.forHeaderRight,
           ])}>
@@ -352,7 +351,7 @@ module IOSImpl = {
       let lastIdx = Array.length(screens) - 1;
       <SafeAreaView
         style=Style.(
-          concat([
+          list([
             Styles.container,
             scr(props).header.style |> Js.Option.getWithDefault(style([])),
           ])
@@ -366,9 +365,9 @@ module IOSImpl = {
                   * a relation between -1, 0, 1 - just like in StackNavigator
                   */
                 let animatedValue =
-                  GoldStyle.Animated.Value.add(
+                  BsReactNative.Animated.Value.add(
                     anim,
-                    GoldStyle.Animated.Value.create(-. float_of_int(idx)),
+                    BsReactNative.Animated.Value.create(-. float_of_int(idx)),
                   );
                 let screenProps = {
                   ...props,
@@ -386,9 +385,9 @@ module IOSImpl = {
                 let initialOpacity =
                   Style.(
                     style(
-                      self.state.leftWidths
+                      state.leftWidths
                       |> StringMap.hasKey(screen.key)
-                      && self.state.titleWidths
+                      && state.titleWidths
                       |> StringMap.hasKey(screen.key)
                         ? [] : [opacity(Float(0.0))],
                     )
@@ -400,7 +399,6 @@ module IOSImpl = {
         </View>
       </SafeAreaView>;
     }
-  });
 };
 
 module IOS = {
@@ -442,7 +440,6 @@ module Android = {
         resizeMode(Contain),
       ]);
   };
-  let component = ReasonReact.statelessComponent("AndroidHeader");
   let renderTitle = p =>
     switch (scr(p).header.center) {
     | Some(func) => func(p)
@@ -475,7 +472,7 @@ module Android = {
   let make = (~headerProps as p: props) => {
       <View
         style=Style.(
-          concat([
+          list([
             Styles.header,
             scr(p).header.style |> Js.Option.getWithDefault(style([])),
           ])
