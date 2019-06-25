@@ -474,9 +474,20 @@ module CreateStackNavigator = (Config: {type route;}) => {
           }
         );
 
+      /* Ensures getNavigationInterface will get the current state */
+      let currentScreen = React.useRef(state.screens[state.activeScreen].key)
+
+      let _updateCurrentScreen = React.useEffect1(
+        () => {
+          currentScreen->React.Ref.setCurrent(state.screens[state.activeScreen].key)
+          None;
+        },
+        [|state.screens[state.activeScreen].key|],
+      );
+
       React.useEffect0(() => {
         onNavigationReady(
-          getNavigationInterface(send, state.screens[state.activeScreen].key),
+          () => getNavigationInterface(send, currentScreen->React.Ref.current),
         );
         None;
       });
