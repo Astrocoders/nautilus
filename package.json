@@ -1,6 +1,6 @@
 {
   "name": "@astrocoders/nautilus",
-  "version": "0.2.1",
+  "version": "1.0.0-beta.0",
   "description": "Nautilus",
   "main": "index.js",
   "scripts": {
@@ -47,6 +47,6 @@
   },
   "dependencies": {
     "react-native-magic-move": "^0.4.0",
-    "reason-react-compat": "^0.2.0"
+    "reason-react-update": "^0.1.1"
   }
 }
