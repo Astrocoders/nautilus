@@ -93,7 +93,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
             ~maxDeltaX: 'maxDeltaX,
             ~minDeltaX: 'minDeltaX,
             ~enabled: 'enabled,
-            ~onHandlerStateChange: 'onHandlerStateChange,
+            ~onHandlerStateChange: (Js.t({..} as 'a)) => unit,
             ~hitSlop: 'hitSlop,
             ~children: React.element
           ) =>
@@ -551,7 +551,7 @@ module CreateStackNavigator = (Config: {type route;}) => {
           maxDeltaX=screenWidth
           enabled={size > 1}
           onGestureEvent=Gestures.handler
-          onHandlerStateChange=Gestures.onStateChange>
+          onHandlerStateChange=React.useMemo1(() => (event) => Gestures.onStateChange(event, { state, send }), [|state|])>
           <Animated.View style=Styles.flex>
             {state.screens
              |> Array.mapi((idx, screen: screenConfig) => {
